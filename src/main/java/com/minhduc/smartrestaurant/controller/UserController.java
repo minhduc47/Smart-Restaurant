@@ -1,7 +1,8 @@
 package com.minhduc.smartrestaurant.controller;
 
 import java.util.List;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.minhduc.smartrestaurant.domain.User;
 import com.minhduc.smartrestaurant.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
@@ -23,30 +23,33 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public User createUser(@RequestBody User userRequest) {
+    public ResponseEntity<User> createUser(@RequestBody User userRequest) {
         User newUser = this.userService.handleCreateUser(userRequest);
-        return newUser;
+        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable("id") long id) {
-        return this.userService.fetchUserById(id);
+    public ResponseEntity<User> getUser(@PathVariable("id") long id) {
+        User user = this.userService.fetchUserById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @GetMapping("/users")
-    public List<User> getAllUser() {
-        return this.userService.fetchAllUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = this.userService.fetchAllUsers();
+        return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
     @PutMapping("/users")
-    public User updateUser(@RequestBody User user) {
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
         // TODO: process PUT request
         User updateUser = this.userService.handleUpdateUser(user);
-        return updateUser;
+        return ResponseEntity.ok(updateUser);
     }
 
     @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) {
         this.userService.handleDeleteUser(id);
+        return ResponseEntity.status(HttpStatus.OK).body("completed");
     }
 }

@@ -49,4 +49,8 @@ public class UserService {
         // Logic to handle user deletion
         this.userRepository.deleteById(id);
     }
+
+    public User handleGetUserByUsername(String username) {
+        return this.userRepository.findByEmail(username);
+    }
 }

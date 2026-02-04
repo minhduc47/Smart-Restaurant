@@ -16,10 +16,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "catagories")
+@Table(name = "categories")
 @Getter
 @Setter
-public class Catagory {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

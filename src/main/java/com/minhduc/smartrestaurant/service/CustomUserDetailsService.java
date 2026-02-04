@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component("userDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
@@ -21,7 +20,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         com.minhduc.smartrestaurant.domain.User user = this.userService.handleGetUserByUsername(username);
-
+        if (user == null) {
+            throw new UsernameNotFoundException("Username/password không hợp lệ");
+        }
         return new User(
                 user.getEmail(),
                 user.getPassword(),

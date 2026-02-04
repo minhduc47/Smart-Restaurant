@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.minhduc.smartrestaurant.domain.Catagory;
 import com.minhduc.smartrestaurant.service.CatagoryService;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class CatagoryController {
     private final CatagoryService catagoryService;
@@ -18,7 +20,7 @@ public class CatagoryController {
     }
 
     @PostMapping("/catagories")
-    public ResponseEntity<Catagory> createCatagory(@RequestBody Catagory catagory) {
+    public ResponseEntity<Catagory> createCatagory(@Valid @RequestBody Catagory catagory) {
         Catagory createdCatagory = catagoryService.handleCreateCatagory(catagory);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCatagory);
     }

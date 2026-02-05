@@ -17,6 +17,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO;
+
 @Service
 public class SecurityUtil {
 
@@ -30,20 +32,38 @@ public class SecurityUtil {
 
     @Value("${minhduc.jwt.base64-secret}")
     private String jwtKey;
+    @Value("${minhduc.jwt.access-token-validity-in-seconds}")
+    private long accessTokenExpiration;
+    @Value("${minhduc.jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenExpiration;
 
-    @Value("${minhduc.jwt.token-validity-in-seconds}")
-    private long jwtExpiration;
-
-    public String createToken(Authentication authentication) {
+    public String createAccessToken(Authentication authentication) {
         Instant now = Instant.now();
-        Instant validity = now.plus(this.jwtExpiration, ChronoUnit.SECONDS);
+        Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
         // Payload
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(authentication.getName())
-                .claim("authorities", authentication)
+                .claim("user", authentication)
+                .build();
+
+        // Header: chỉ lưu thông tin thuật toán
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+    }
+
+    public String createRefreshToken(String email, ResLoginDTO resLoginDTO) {
+        Instant now = Instant.now();
+        Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+
+        // Payload
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuedAt(now)
+                .expiresAt(validity)
+                .subject(email)
+                .claim("user", resLoginDTO.getUser())
                 .build();
 
         // Header: chỉ lưu thông tin thuật toán

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.minhduc.smartrestaurant.domain.User;
 import com.minhduc.smartrestaurant.domain.dto.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.UserService;
+import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
 
 import org.springframework.data.domain.Pageable;
@@ -49,6 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
+    @ApiMessage("fetch all users")
     public ResponseEntity<ResultPaginationDTO> getAllUsers(@Filter Specification<User> spec, Pageable pageable) {
         return ResponseEntity.ok(this.userService.fetchAllUsers(spec, pageable));
     }

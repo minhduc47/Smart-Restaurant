@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.minhduc.smartrestaurant.domain.RestResponse;
+import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -41,7 +42,8 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
         } else {
             // case success
             res.setData(body);
-            res.setMessage("Call api success");
+            ApiMessage message = returnType.getMethodAnnotation(ApiMessage.class);
+            res.setMessage(message != null ? message.value() : "CALL API SUCCESS");
         }
 
         return res;

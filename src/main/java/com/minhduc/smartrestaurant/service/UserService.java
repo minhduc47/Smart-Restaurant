@@ -5,8 +5,10 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.User;
 import com.minhduc.smartrestaurant.domain.dto.Meta;
 import com.minhduc.smartrestaurant.domain.dto.ResultPaginationDTO;
@@ -34,20 +36,16 @@ public class UserService {
         }
     }
 
-    public ResultPaginationDTO fetchAllUsers(Pageable pageable) {
-        Page<User> pageUser = this.userRepository.findAll(pageable);
+    public ResultPaginationDTO fetchAllUsers(Specification<User> spec, Pageable pageable) {
+        Page<User> pageUser = userRepository.findAll(spec, pageable);
         ResultPaginationDTO result = new ResultPaginationDTO();
         Meta meta = new Meta();
-
-        meta.setPage(pageUser.getNumber());
-        meta.setPageSize(pageUser.getSize());
-
+        meta.setPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
         meta.setPages(pageUser.getTotalPages());
         meta.setTotal(pageUser.getTotalElements());
-
         result.setMeta(meta);
         result.setResult(pageUser.getContent());
-
         return result;
     }
 

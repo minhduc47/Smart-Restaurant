@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.minhduc.smartrestaurant.domain.User;
 import com.minhduc.smartrestaurant.domain.dto.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.UserService;
+import com.turkraft.springfilter.boot.Filter;
+
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -46,20 +49,8 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<ResultPaginationDTO> getAllUsers(
-            @RequestParam("current") Optional<String> currentOptional,
-            @RequestParam("pageSize") Optional<String> pageSizeOptional) {
-
-        String sCurrent = currentOptional.isPresent() ? currentOptional.get() : "";
-        String sPageSize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
-
-        int current = Integer.parseInt(sCurrent);
-        int pageSize = Integer.parseInt(sPageSize);
-
-        // current - 1: Tham số của hàm PageRequest.of là: pageNumber bắt đầu từ số 0
-        Pageable pageable = PageRequest.of(current - 1, pageSize);
-
-        return ResponseEntity.ok(this.userService.fetchAllUsers(pageable));
+    public ResponseEntity<ResultPaginationDTO> getAllUsers(@Filter Specification<User> spec, Pageable pageable) {
+        return ResponseEntity.ok(this.userService.fetchAllUsers(spec, pageable));
     }
 
     @PutMapping("/users")

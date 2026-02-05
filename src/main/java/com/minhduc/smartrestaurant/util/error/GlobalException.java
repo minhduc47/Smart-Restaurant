@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.minhduc.smartrestaurant.domain.RestResponse;
 
@@ -21,7 +22,8 @@ public class GlobalException {
     // https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ControllerAdvice.html
     @ExceptionHandler(value = {
             UsernameNotFoundException.class,
-            BadCredentialsException.class
+            BadCredentialsException.class,
+            IdInvalidException.class
     })
     public ResponseEntity<RestResponse<Object>> handleLoginException(Exception ex) {
         RestResponse<Object> res = new RestResponse<Object>();
@@ -30,6 +32,17 @@ public class GlobalException {
         res.setMessage("Exception occurs...");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    // Handle lỗi 404 not found
+    @ExceptionHandler(value = { NoResourceFoundException.class, })
+    public ResponseEntity<RestResponse<Object>> handleNotFoundException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.NOT_FOUND.value());
+        res.setError(ex.getMessage());
+        res.setMessage("404 Not Found. URL not exist.");
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
 
     // Handle lỗi username, password khi đăng nhập để trống sẽ báo lỗi

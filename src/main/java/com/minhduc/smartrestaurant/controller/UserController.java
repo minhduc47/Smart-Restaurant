@@ -16,10 +16,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.User;
+import com.minhduc.smartrestaurant.domain.dto.ResCreateUserDTO;
+import com.minhduc.smartrestaurant.domain.dto.ResUpdateUserDTO;
+import com.minhduc.smartrestaurant.domain.dto.ResUserDTO;
 import com.minhduc.smartrestaurant.domain.dto.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.UserService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
+import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
+
+import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,17 +44,31 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User userRequest) {
+    @ApiMessage("Create a new user")
+    public ResponseEntity<ResCreateUserDTO> createUser(@Valid @RequestBody User userRequest) throws IdInvalidException {
+        // check email exist in database
+        boolean isEmailExist = this.userService.isEmailExist(userRequest.getEmail());
+
+        if (isEmailExist) {
+            throw new IdInvalidException(
+                    "Email " + userRequest.getEmail() + " đã tồn tại, vui lòng sử dụng email khác.");
+        }
         String hashPasword = this.passwordEncoder.encode(userRequest.getPassword());
         userRequest.setPassword(hashPasword);
         User newUser = this.userService.handleCreateUser(userRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+        ResCreateUserDTO resCreateUserDTO = this.userService.convertToResCreateUserDTO(newUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resCreateUserDTO);
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") long id) {
+    @ApiMessage("Get user by ID")
+    public ResponseEntity<ResUserDTO> getUser(@PathVariable("id") long id) throws IdInvalidException {
         User user = this.userService.fetchUserById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        if (user == null) {
+            throw new IdInvalidException("User với id = " + id + " không tồn tại");
+        }
+        ResUserDTO resUserDTO = this.userService.convertToResUserDTO(user);
+        return ResponseEntity.status(HttpStatus.OK).body(resUserDTO);
     }
 
     @GetMapping("/users")
@@ -58,15 +78,28 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
-        // TODO: process PUT request
-        User updateUser = this.userService.handleUpdateUser(user);
-        return ResponseEntity.ok(updateUser);
+    @ApiMessage("Update a user")
+    public ResponseEntity<ResUpdateUserDTO> updateUser(@RequestBody User requestUser) throws IdInvalidException {
+        User fetchUserById = this.userService.fetchUserById(requestUser.getId());
+        if (fetchUserById == null) {
+            throw new IdInvalidException("User với id = " + requestUser.getId() + " không tồn tại");
+        }
+
+        User userUpdate = this.userService.handleUpdateUser(requestUser);
+
+        ResUpdateUserDTO res = this.userService.convertToResUpdateUserDTO(userUpdate);
+        return ResponseEntity.ok(res);
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) {
+    @ApiMessage("Delete a user")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
         this.userService.handleDeleteUser(id);
-        return ResponseEntity.status(HttpStatus.OK).body("completed");
+        User currentUser = this.userService.fetchUserById(id);
+        if (currentUser == null) {
+            throw new IdInvalidException("User với id = " + id + " không tồn tại");
+        }
+        this.userService.handleDeleteUser(id);
+        return ResponseEntity.ok(null);
     }
 }

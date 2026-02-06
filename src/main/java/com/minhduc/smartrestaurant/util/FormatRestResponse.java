@@ -9,7 +9,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import com.minhduc.smartrestaurant.domain.RestResponse;
+import com.minhduc.smartrestaurant.domain.response.RestResponse;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
 
 import jakarta.servlet.http.HttpServletResponse;

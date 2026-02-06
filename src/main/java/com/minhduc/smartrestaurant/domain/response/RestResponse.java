@@ -1,4 +1,4 @@
-package com.minhduc.smartrestaurant.domain;
+package com.minhduc.smartrestaurant.domain.response;
 
 public class RestResponse<T> {
     private int statusCode;

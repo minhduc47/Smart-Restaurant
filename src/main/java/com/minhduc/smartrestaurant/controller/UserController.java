@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.User;
-import com.minhduc.smartrestaurant.domain.dto.ResCreateUserDTO;
-import com.minhduc.smartrestaurant.domain.dto.ResUpdateUserDTO;
-import com.minhduc.smartrestaurant.domain.dto.ResUserDTO;
-import com.minhduc.smartrestaurant.domain.dto.ResultPaginationDTO;
+import com.minhduc.smartrestaurant.domain.response.ResCreateUserDTO;
+import com.minhduc.smartrestaurant.domain.response.ResUpdateUserDTO;
+import com.minhduc.smartrestaurant.domain.response.ResUserDTO;
+import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.UserService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;

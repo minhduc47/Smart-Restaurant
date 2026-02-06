@@ -1,4 +1,4 @@
-package com.minhduc.smartrestaurant.domain.dto;
+package com.minhduc.smartrestaurant.domain.response;
 
 import lombok.Getter;
 import lombok.Setter;

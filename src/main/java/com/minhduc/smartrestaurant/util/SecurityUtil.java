@@ -23,7 +23,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
 
-import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO;
+import com.minhduc.smartrestaurant.domain.response.ResLoginDTO;
 import com.nimbusds.jose.util.Base64;
 
 @Service

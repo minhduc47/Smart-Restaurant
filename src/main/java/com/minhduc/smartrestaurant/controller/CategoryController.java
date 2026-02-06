@@ -19,7 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.minhduc.smartrestaurant.domain.Category;
-import com.minhduc.smartrestaurant.domain.dto.ResultPaginationDTO;
+import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.CategoryService;
 import com.turkraft.springfilter.boot.Filter;
 

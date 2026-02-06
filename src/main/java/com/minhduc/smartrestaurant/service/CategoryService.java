@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Category;
-import com.minhduc.smartrestaurant.domain.dto.ResultPaginationDTO;
+import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.repository.CategoryRepository;
 
 @Service

@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.User;
-import com.minhduc.smartrestaurant.domain.dto.ReqLoginDTO;
-import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO;
-import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO.UserGetAccount;
-import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO.UserLogin;
+import com.minhduc.smartrestaurant.domain.request.ReqLoginDTO;
+import com.minhduc.smartrestaurant.domain.response.ResLoginDTO;
+import com.minhduc.smartrestaurant.domain.response.ResLoginDTO.UserGetAccount;
+import com.minhduc.smartrestaurant.domain.response.ResLoginDTO.UserLogin;
 import com.minhduc.smartrestaurant.service.UserService;
 import com.minhduc.smartrestaurant.util.SecurityUtil;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;

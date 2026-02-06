@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.User;
-import com.minhduc.smartrestaurant.domain.dto.Meta;
 import com.minhduc.smartrestaurant.domain.dto.ResCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.dto.ResUpdateUserDTO;
 import com.minhduc.smartrestaurant.domain.dto.ResUserDTO;
@@ -43,7 +42,7 @@ public class UserService {
     public ResultPaginationDTO fetchAllUsers(Specification<User> spec, Pageable pageable) {
         Page<User> pageUser = userRepository.findAll(spec, pageable);
         ResultPaginationDTO result = new ResultPaginationDTO();
-        Meta meta = new Meta();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
         meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
         meta.setPages(pageUser.getTotalPages());

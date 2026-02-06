@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Category;
-import com.minhduc.smartrestaurant.domain.dto.Meta;
 import com.minhduc.smartrestaurant.domain.dto.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.repository.CategoryRepository;
 
@@ -37,7 +36,7 @@ public class CategoryService {
     public ResultPaginationDTO fetchCategories(Specification<Category> spec, Pageable pageable) {
         Page<Category> pageCategory = categoryRepository.findAll(spec, pageable);
         ResultPaginationDTO result = new ResultPaginationDTO();
-        Meta meta = new Meta();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
         meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
         meta.setPages(pageCategory.getTotalPages());

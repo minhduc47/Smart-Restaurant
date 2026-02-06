@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.User;
-import com.minhduc.smartrestaurant.domain.dto.LoginDTO;
+import com.minhduc.smartrestaurant.domain.dto.ReqLoginDTO;
 import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO;
 import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO.UserGetAccount;
 import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO.UserLogin;
@@ -48,7 +48,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody ReqLoginDTO loginDTO) {
         // Nạp input gồm username/password vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(), loginDTO.getPassword());

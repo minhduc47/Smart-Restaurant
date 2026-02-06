@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.minhduc.smartrestaurant.domain.User;
 import com.minhduc.smartrestaurant.domain.dto.LoginDTO;
 import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO;
+import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO.UserGetAccount;
 import com.minhduc.smartrestaurant.domain.dto.ResLoginDTO.UserLogin;
 import com.minhduc.smartrestaurant.service.UserService;
 import com.minhduc.smartrestaurant.util.SecurityUtil;
@@ -95,22 +96,24 @@ public class AuthController {
 
     @GetMapping("/auth/account")
     @ApiMessage("Get user information")
-    public ResponseEntity<ResLoginDTO.UserLogin> getAccount() {
+    public ResponseEntity<ResLoginDTO.UserGetAccount> getAccount() {
         String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
 
         ResLoginDTO res = new ResLoginDTO();
         // Constructor Inner Class
         UserLogin userLogin = res.new UserLogin();
-
+        UserGetAccount userGetAccount = res.new UserGetAccount();
         User currentUserDB = this.userService.handleGetUserByUsername(email);
         if (currentUserDB != null) {
             // Set Data into Inner class: UserLogin
             userLogin.setId(currentUserDB.getId());
             userLogin.setEmail(currentUserDB.getEmail());
             userLogin.setName(currentUserDB.getName());
+            // Set userLogin into UserGetAccount
+            userGetAccount.setUser(userLogin);
         }
 
-        return ResponseEntity.ok().body(userLogin);
+        return ResponseEntity.ok().body(userGetAccount);
     }
 
     @GetMapping("/auth/refresh")

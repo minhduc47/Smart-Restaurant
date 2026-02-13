@@ -2,6 +2,7 @@ package com.minhduc.smartrestaurant.domain.response;
 
 import java.time.Instant;
 
+import com.minhduc.smartrestaurant.domain.response.ResCreateUserDTO.RoleUser;
 import com.minhduc.smartrestaurant.util.constant.GenderEnum;
 
 import lombok.Getter;
@@ -16,4 +17,12 @@ public class ResUpdateUserDTO {
     private String address;
     private int age;
     private Instant updatedAt;
+    private RoleUser role;
+
+    @Getter
+    @Setter
+    public static class RoleUser {
+        private long id;
+        private String name;
+    }
 }

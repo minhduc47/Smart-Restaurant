@@ -1,11 +1,9 @@
 package com.minhduc.smartrestaurant.domain;
 
-import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.minhduc.smartrestaurant.util.SecurityUtil;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,8 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -27,7 +23,7 @@ import lombok.Setter;
 @Table(name = "Roles")
 @Getter
 @Setter
-public class Role {
+public class Role extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -37,11 +33,6 @@ public class Role {
 
     private String description;
     private boolean active;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private String createdBy;
-    private String updatedBy;
-
     @ManyToMany
     @JsonIgnoreProperties(value = { "roles" })
     @JoinTable(name = "permission_role", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
@@ -50,21 +41,4 @@ public class Role {
     @JsonIgnore
     private List<User> user;
 
-    @PrePersist
-    public void handleBeforeCreate() {
-        String userLogin = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
-        this.createdBy = userLogin;
-        this.createdAt = Instant.now();
-    }
-
-    @PreUpdate
-    public void handleBeforeUpdate() {
-        String userLogin = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
-        this.updatedBy = userLogin;
-        this.updatedAt = Instant.now();
-    }
 }

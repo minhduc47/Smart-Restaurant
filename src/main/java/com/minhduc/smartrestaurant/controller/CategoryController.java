@@ -1,9 +1,5 @@
 package com.minhduc.smartrestaurant.controller;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,6 +16,8 @@ import org.springframework.data.jpa.domain.Specification;
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.CategoryService;
+import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
+import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
@@ -34,31 +31,36 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @PostMapping("/catagories")
+    @PostMapping("/categories")
+    @ApiMessage("Create a new category")
     public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
         Category newcategory = categoryService.handleCreateCategory(category);
         return ResponseEntity.status(HttpStatus.CREATED).body(newcategory);
     }
 
-    @GetMapping("/catagories/{id}")
-    public ResponseEntity<Category> getCategory(@PathVariable("id") long id) {
+    @GetMapping("/categories/{id}")
+    @ApiMessage("Fetch category by id")
+    public ResponseEntity<Category> getCategory(@PathVariable("id") long id) throws IdInvalidException {
         Category category = categoryService.fetchCategoryById(id);
         return ResponseEntity.status(HttpStatus.OK).body(category);
     }
 
-    @GetMapping("/catagories")
-    public ResponseEntity<ResultPaginationDTO> getCatagories(@Filter Specification<Category> spec, Pageable pageable) {
+    @GetMapping("/categories")
+    @ApiMessage("Fetch all categories with pagination")
+    public ResponseEntity<ResultPaginationDTO> getCategories(@Filter Specification<Category> spec, Pageable pageable) {
         return ResponseEntity.ok(this.categoryService.fetchCategories(spec, pageable));
     }
 
-    @PutMapping("/catagories")
-    public ResponseEntity<Category> updateCategory(@RequestBody Category category) {
+    @PutMapping("/categories")
+    @ApiMessage("Update a category")
+    public ResponseEntity<Category> updateCategory(@RequestBody Category category) throws IdInvalidException {
         Category updateCategory = categoryService.handleUpdateCategory(category);
         return ResponseEntity.status(HttpStatus.OK).body(updateCategory);
     }
 
-    @DeleteMapping("/catagories/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable("id") long id) {
+    @DeleteMapping("/categories/{id}")
+    @ApiMessage("Delete a category")
+    public ResponseEntity<Void> deleteCategory(@PathVariable("id") long id) throws IdInvalidException {
         categoryService.handleDeleteCategory(id);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }

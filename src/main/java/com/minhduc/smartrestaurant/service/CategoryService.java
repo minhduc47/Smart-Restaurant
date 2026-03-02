@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.repository.CategoryRepository;
+import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 
 @Service
 public class CategoryService {
@@ -24,12 +25,12 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public Category fetchCategoryById(long id) {
+    public Category fetchCategoryById(long id) throws IdInvalidException {
         Optional<Category> category = categoryRepository.findById(id);
         if (category.isPresent()) {
             return category.get();
         } else {
-            throw new RuntimeException("category not found");
+            throw new IdInvalidException("Category với id = " + id + " không tồn tại");
         }
     }
 
@@ -46,7 +47,7 @@ public class CategoryService {
         return result;
     }
 
-    public Category handleUpdateCategory(Category category) {
+    public Category handleUpdateCategory(Category category) throws IdInvalidException {
         // Logic to handle category update
         Category existCategory = fetchCategoryById(category.getId());
         existCategory.setName(category.getName());
@@ -54,8 +55,8 @@ public class CategoryService {
         return existCategory;
     }
 
-    public void handleDeleteCategory(long id) {
-        // Logic to handle category deletion
-        this.categoryRepository.deleteById(id);
+    public void handleDeleteCategory(long id) throws IdInvalidException {
+        Category currentCategory = this.fetchCategoryById(id);
+        this.categoryRepository.delete(currentCategory);
     }
 }

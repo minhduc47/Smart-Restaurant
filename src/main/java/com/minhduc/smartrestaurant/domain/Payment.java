@@ -32,7 +32,7 @@ public class Payment extends BaseEntity {
     private PaymentStatusEnum status;
     private String transactionRef;
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId // Báo cho Hibernate biết: Hãy dùng ID của Order gán vào field 'id' ở trên!
+    @MapsId
     @JoinColumn(name = "order_id")
     private Order order;
 

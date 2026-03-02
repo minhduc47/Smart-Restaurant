@@ -19,7 +19,6 @@ import com.minhduc.smartrestaurant.domain.response.RestResponse;
 @RestControllerAdvice
 public class GlobalException {
 
-    // https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ControllerAdvice.html
     @ExceptionHandler(value = {
             UsernameNotFoundException.class,
             BadCredentialsException.class,

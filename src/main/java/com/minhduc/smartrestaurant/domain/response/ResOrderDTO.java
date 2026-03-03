@@ -18,4 +18,5 @@ public class ResOrderDTO {
     private Instant createdAt;
 
     private Long tableId;
+
 }

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Dish;
@@ -12,6 +15,7 @@ import com.minhduc.smartrestaurant.domain.OrderDetail;
 import com.minhduc.smartrestaurant.domain.RestaurantTable;
 import com.minhduc.smartrestaurant.domain.request.ReqCreateOrderDTO;
 import com.minhduc.smartrestaurant.domain.response.ResOrderDTO;
+import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.repository.DishRepository;
 import com.minhduc.smartrestaurant.repository.OrderRepository;
 import com.minhduc.smartrestaurant.repository.RestaurantTableRepository;
@@ -107,4 +111,29 @@ public class OrderService {
         }
         return resDTO;
     }
+
+    public Order handleFetchOrderById(Long id) throws IdInvalidException {
+        Optional<Order> orderOpt = orderRepository.findById(id);
+        if (orderOpt.isEmpty()) {
+            throw new IdInvalidException("Đơn hàng với id = " + id + " không tồn tại");
+        }
+        return orderOpt.get();
+    }
+
+    public ResultPaginationDTO fetchAllOrders(Specification<Order> spec, Pageable pageable) {
+        Page<Order> page = orderRepository.findAll(spec, pageable);
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
+        meta.setPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
+        meta.setPages(page.getTotalPages());
+        meta.setTotal(page.getTotalElements());
+        result.setMeta(meta);
+        List<ResOrderDTO> listOrder = page.getContent().stream()
+                .map(order -> convertToResOrderDTO(order))
+                .toList();
+        result.setResult(listOrder);
+        return result;
+    }
+
 }

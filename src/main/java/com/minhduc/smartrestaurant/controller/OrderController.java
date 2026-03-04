@@ -58,4 +58,12 @@ public class OrderController {
         return ResponseEntity.ok(result);
     }
 
+    @PutMapping("/orders/{id}")
+    @ApiMessage("Update order by id")
+    public ResponseEntity<ResOrderDTO> updateOrder(@PathVariable Long id, @Valid @RequestBody ReqCreateOrderDTO reqDTO)
+            throws IdInvalidException {
+        Order updatedOrder = orderService.handleUpdateOrder(id, reqDTO);
+        ResOrderDTO resDTO = orderService.convertToResOrderDTO(updatedOrder);
+        return ResponseEntity.ok(resDTO);
+    }
 }

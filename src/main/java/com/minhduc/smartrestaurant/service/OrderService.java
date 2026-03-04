@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.minhduc.smartrestaurant.domain.Dish;
 import com.minhduc.smartrestaurant.domain.Order;
@@ -37,6 +38,7 @@ public class OrderService {
         this.restaurantTableRepository = restaurantTableRepository;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Order handleCreateOrder(ReqCreateOrderDTO reqDTO) throws IdInvalidException {
         Order order = new Order();
         order.setStatus(OrderStatusEnum.PENDING);
@@ -136,4 +138,58 @@ public class OrderService {
         return result;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public Order handleUpdateOrder(Long id, ReqCreateOrderDTO reqDTO) throws IdInvalidException {
+        Order existingOrder = this.handleFetchOrderById(id);
+
+        if (existingOrder.getStatus() == OrderStatusEnum.PAID
+                || existingOrder.getStatus() == OrderStatusEnum.CANCELLED) {
+            throw new IdInvalidException("Không thể cập nhật đơn hàng đã thanh toán hoặc đã hủy");
+        }
+
+        existingOrder.setNote(reqDTO.getNote());
+        existingOrder.setOrderType(reqDTO.getOrderType());
+        if (reqDTO.getOrderType() == OrderEnum.IN_STORE && reqDTO.getTableId() != null) {
+            Long oldTableId = (existingOrder.getRestaurantTable() != null)
+                    ? existingOrder.getRestaurantTable().getId()
+                    : null;
+
+            if (!java.util.Objects.equals(reqDTO.getTableId(), oldTableId)) {
+
+                if (existingOrder.getRestaurantTable() != null) {
+                    existingOrder.getRestaurantTable().setOccupied(TableEnum.AVAILABLE);
+                }
+
+                RestaurantTable newTable = restaurantTableRepository.findById(reqDTO.getTableId())
+                        .orElseThrow(() -> new IdInvalidException("Bàn mới không tồn tại"));
+
+                if (newTable.getOccupied() == TableEnum.OCCUPIED) {
+                    throw new IdInvalidException("Bàn " + newTable.getName() + " hiện đang có khách!");
+                }
+                newTable.setOccupied(TableEnum.OCCUPIED);
+                existingOrder.setRestaurantTable(newTable);
+            }
+        }
+        existingOrder.getOrderDetails().clear();
+
+        long finalTotalPrice = 0;
+        for (ReqCreateOrderDTO.OrderItem item : reqDTO.getItems()) {
+            Dish dish = dishRepository.findById(item.getDishId())
+                    .orElseThrow(() -> new IdInvalidException("Món ăn không tồn tại"));
+
+            OrderDetail detail = new OrderDetail();
+            detail.setDish(dish);
+            detail.setQuantity(item.getQuantity());
+            detail.setNote(item.getNote());
+            detail.setHistoricalPrice(dish.getPrice());
+            detail.setOrder(existingOrder);
+
+            existingOrder.getOrderDetails().add(detail);
+            finalTotalPrice += dish.getPrice() * item.getQuantity();
+        }
+
+        existingOrder.setTotalPrice(finalTotalPrice);
+
+        return orderRepository.save(existingOrder);
+    }
 }

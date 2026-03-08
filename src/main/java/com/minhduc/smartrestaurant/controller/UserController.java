@@ -94,7 +94,6 @@ public class UserController {
     @DeleteMapping("/users/{id}")
     @ApiMessage("Delete a user")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
-        this.userService.handleDeleteUser(id);
         User currentUser = this.userService.fetchUserById(id);
         if (currentUser == null) {
             throw new IdInvalidException("User với id = " + id + " không tồn tại");

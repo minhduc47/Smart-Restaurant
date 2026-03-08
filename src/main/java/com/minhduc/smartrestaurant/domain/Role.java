@@ -33,7 +33,7 @@ public class Role extends BaseEntity {
 
     private String description;
     private boolean active;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "roles" })
     @JoinTable(name = "permission_role", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<Permission> permissions;

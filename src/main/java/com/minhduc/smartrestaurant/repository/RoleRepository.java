@@ -9,4 +9,6 @@ import com.minhduc.smartrestaurant.domain.Role;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long>, JpaSpecificationExecutor<Role> {
     boolean existsByName(String name);
+
+    Role findByName(String name);
 }

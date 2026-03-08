@@ -115,4 +115,8 @@ public class RoleService {
     public void deleteRole(long id) {
         this.roleRepository.deleteById(id);
     }
+
+    public Role findByName(String name) {
+        return this.roleRepository.findByName(name);
+    }
 }

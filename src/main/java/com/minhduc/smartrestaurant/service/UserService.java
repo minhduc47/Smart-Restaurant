@@ -7,11 +7,13 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.Role;
 import com.minhduc.smartrestaurant.domain.User;
+import com.minhduc.smartrestaurant.domain.request.ReqRegisterDTO;
 import com.minhduc.smartrestaurant.domain.response.ResCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResUpdateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResUserDTO;
@@ -22,10 +24,12 @@ import com.minhduc.smartrestaurant.repository.UserRepository;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RoleService roleService) {
+    public UserService(UserRepository userRepository, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User handleCreateUser(User user) {
@@ -164,5 +168,24 @@ public class UserService {
 
     public User getUserByRefreshTokenAndEmail(String token, String email) {
         return this.userRepository.findByRefreshTokenAndEmail(token, email);
+    }
+
+    public User handleRegister(ReqRegisterDTO registerDTO) {
+        User user = new User();
+        user.setEmail(registerDTO.getEmail());
+        user.setName(registerDTO.getName());
+        user.setAge(registerDTO.getAge());
+        user.setGender(registerDTO.getGender());
+        user.setAddress(registerDTO.getAddress());
+
+        // Hash password
+        user.setPassword(this.passwordEncoder.encode(registerDTO.getPassword()));
+
+        Role userRole = this.roleService.findByName("USER");
+        if (userRole != null) {
+            user.setRole(userRole);
+        }
+
+        return this.userRepository.save(user);
     }
 }

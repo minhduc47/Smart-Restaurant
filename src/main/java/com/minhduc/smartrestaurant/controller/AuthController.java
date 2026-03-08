@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.User;
 import com.minhduc.smartrestaurant.domain.request.ReqLoginDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqRegisterDTO;
 import com.minhduc.smartrestaurant.domain.response.ResCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResLoginDTO;
 import com.minhduc.smartrestaurant.domain.response.ResLoginDTO.UserGetAccount;
@@ -42,14 +43,12 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     @Value("${minhduc.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
-    private final PasswordEncoder passwordEncoder;
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
-            UserService userService, PasswordEncoder passwordEncoder) {
+            UserService userService) {
         this.securityUtil = securityUtil;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/auth/login")
@@ -204,19 +203,17 @@ public class AuthController {
 
     @PostMapping("/auth/register")
     @ApiMessage("Register a new user")
-    public ResponseEntity<ResCreateUserDTO> register(@Valid @RequestBody User requestUser) throws IdInvalidException {
+    public ResponseEntity<ResCreateUserDTO> register(@Valid @RequestBody ReqRegisterDTO registerDTO)
+            throws IdInvalidException {
         // check email exist in database
-        boolean isEmailExist = this.userService.isEmailExist(requestUser.getEmail());
+        boolean isEmailExist = this.userService.isEmailExist(registerDTO.getEmail());
         if (isEmailExist) {
             throw new IdInvalidException(
-                    "Email " + requestUser.getEmail() + " đã tồn tại, vui lòng sử dụng email khác.");
+                    "Email " + registerDTO.getEmail() + " đã tồn tại, vui lòng sử dụng email khác.");
         }
-        String hashPassword = this.passwordEncoder.encode(requestUser.getPassword());
-        requestUser.setPassword(hashPassword);
+        User newUser = this.userService.handleRegister(registerDTO);
 
-        User newUser = this.userService.handleCreateUser(requestUser);
-        ResCreateUserDTO resCreateUserDTO = this.userService.convertToResCreateUserDTO(newUser);
-
-        return ResponseEntity.status(HttpStatus.OK).body(resCreateUserDTO);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(this.userService.convertToResCreateUserDTO(newUser));
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.Dish;
+import com.minhduc.smartrestaurant.domain.request.DishRequestDTO;
+import com.minhduc.smartrestaurant.domain.response.DishResponseDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.repository.DishRepository;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
@@ -24,14 +26,35 @@ public class DishService {
 
     }
 
-    public Dish handleCreateDish(Dish dish) throws IdInvalidException {
-        if (dish.getCategory() != null) {
-            Category category = this.categoryService.fetchCategoryById(dish.getCategory().getId());
-            dish.setCategory(category);
-        } else {
-            throw new IdInvalidException("Category không được để trống");
-        }
+    public Dish handleCreateDish(DishRequestDTO reqDTO) throws IdInvalidException {
+        Category category = this.categoryService.fetchCategoryById(reqDTO.getCategoryId());
+
+        Dish dish = new Dish();
+        dish.setName(reqDTO.getName());
+        dish.setDescription(reqDTO.getDescription());
+        dish.setPrice(reqDTO.getPrice());
+        dish.setImage(reqDTO.getImage());
+        dish.setCategory(category);
+        dish.setActive(true);
+
         return dishRepository.save(dish);
+    }
+
+    public DishResponseDTO convertToDishResponseDTO(Dish dish) {
+        DishResponseDTO resDTO = new DishResponseDTO();
+        resDTO.setId(dish.getId());
+        resDTO.setName(dish.getName());
+        resDTO.setDescription(dish.getDescription());
+        resDTO.setPrice(dish.getPrice());
+        resDTO.setImage(dish.getImage());
+        resDTO.setActive(dish.isActive());
+
+        if (dish.getCategory() != null) {
+            resDTO.setCategoryId(dish.getCategory().getId());
+            resDTO.setCategoryName(dish.getCategory().getName());
+        }
+
+        return resDTO;
     }
 
     public Dish fetchDishById(long id) throws IdInvalidException {

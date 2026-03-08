@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.Dish;
+import com.minhduc.smartrestaurant.domain.request.DishRequestDTO;
+import com.minhduc.smartrestaurant.domain.response.DishResponseDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.DishService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
@@ -33,9 +35,11 @@ public class DishController {
 
     @PostMapping("/dishes")
     @ApiMessage("Create a new dish")
-    public ResponseEntity<Dish> createDish(@Valid @RequestBody Dish dish) throws IdInvalidException {
-        Dish newDish = dishService.handleCreateDish(dish);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newDish);
+    public ResponseEntity<DishResponseDTO> createDish(@Valid @RequestBody DishRequestDTO reqDTO)
+            throws IdInvalidException {
+        Dish newDish = dishService.handleCreateDish(reqDTO);
+        DishResponseDTO resDTO = dishService.convertToDishResponseDTO(newDish);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resDTO);
     }
 
     @GetMapping("/dishes/{id}")

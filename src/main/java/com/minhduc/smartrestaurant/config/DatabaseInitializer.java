@@ -38,7 +38,6 @@ public class DatabaseInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         System.out.println(">>> START INIT DATABASE");
         long countPermissions = this.permissionRepository.count();
-        long countRoles = this.roleRepository.count();
         long countUsers = this.userRepository.count();
         if (countPermissions == 0) {
             ArrayList<Permission> arr = new ArrayList<>();
@@ -72,18 +71,34 @@ public class DatabaseInitializer implements CommandLineRunner {
             arr.add(new Permission("Delete a user", "/api/v1/users/{id}", "DELETE", "USERS"));
             arr.add(new Permission("Get a user by id", "/api/v1/users/{id}", "GET", "USERS"));
             arr.add(new Permission("Get users with pagination", "/api/v1/users", "GET", "USERS"));
+            arr.add(new Permission("Create a table", "/api/v1/tables", "POST", "TABLES"));
+            arr.add(new Permission("Update a table", "/api/v1/tables", "PUT", "TABLES"));
+            arr.add(new Permission("Delete a table", "/api/v1/tables/{id}", "DELETE", "TABLES"));
+            arr.add(new Permission("Get a table by id", "/api/v1/tables/{id}", "GET", "TABLES"));
+            arr.add(new Permission("Get tables with pagination", "/api/v1/tables", "GET", "TABLES"));
             arr.add(new Permission("Download a file", "/api/v1/files", "POST", "FILES"));
             arr.add(new Permission("Upload a file", "/api/v1/files", "GET", "FILES"));
             this.permissionRepository.saveAll(arr);
         }
-        if (countRoles == 0) {
+        Role superAdminRole = this.roleRepository.findByName("SUPER_ADMIN");
+        if (superAdminRole == null) {
             List<Permission> allPermissions = this.permissionRepository.findAll();
             Role adminRole = new Role();
             adminRole.setName("SUPER_ADMIN");
             adminRole.setDescription("Admin thì full permissions");
             adminRole.setActive(true);
             adminRole.setPermissions(allPermissions);
-            this.roleRepository.save(adminRole);
+            superAdminRole = this.roleRepository.save(adminRole);
+        }
+
+        Role userRole = this.roleRepository.findByName("USER");
+        if (userRole == null) {
+            Role defaultUserRole = new Role();
+            defaultUserRole.setName("USER");
+            defaultUserRole.setDescription("Người dùng mặc định");
+            defaultUserRole.setActive(true);
+            defaultUserRole.setPermissions(new ArrayList<>());
+            this.roleRepository.save(defaultUserRole);
         }
         if (countUsers == 0) {
             User adminUser = new User();
@@ -93,13 +108,12 @@ public class DatabaseInitializer implements CommandLineRunner {
             adminUser.setGender(GenderEnum.MALE);
             adminUser.setName("I'm super admin");
             adminUser.setPassword(this.passwordEncoder.encode("123456"));
-            Role adminRole = this.roleRepository.findByName("SUPER_ADMIN");
-            if (adminRole != null) {
-                adminUser.setRole(adminRole);
+            if (superAdminRole != null) {
+                adminUser.setRole(superAdminRole);
             }
             this.userRepository.save(adminUser);
         }
-        if (countPermissions > 0 && countRoles > 0 && countUsers > 0) {
+        if (countPermissions > 0 && countUsers > 0) {
             System.out.println(">>> SKIP INIT DATABASE ~ ALREADY HAVE DATA...");
         } else
             System.out.println(">>> END INIT DATABASE");

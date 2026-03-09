@@ -38,6 +38,11 @@ public class UserService {
         if (user.getRole() != null) {
             Role role = this.roleService.fetchRoleById(user.getRole().getId());
             user.setRole(role != null ? role : null);
+        } else {
+            Role defaultUserRole = this.roleService.findByName("USER");
+            if (defaultUserRole != null) {
+                user.setRole(defaultUserRole);
+            }
         }
         return this.userRepository.save(user);
     }

@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.minhduc.smartrestaurant.domain.Category;
+import com.minhduc.smartrestaurant.domain.request.ReqCategoryDTO;
+import com.minhduc.smartrestaurant.domain.response.ResCategoryDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.CategoryService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
@@ -33,8 +35,8 @@ public class CategoryController {
 
     @PostMapping("/categories")
     @ApiMessage("Create a new category")
-    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
-        Category newcategory = categoryService.handleCreateCategory(category);
+    public ResponseEntity<ResCategoryDTO> createCategory(@Valid @RequestBody ReqCategoryDTO reqCategoryDTO) {
+        ResCategoryDTO newcategory = categoryService.handleCreateCategory(reqCategoryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newcategory);
     }
 

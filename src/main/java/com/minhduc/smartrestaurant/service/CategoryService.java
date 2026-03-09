@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Category;
+import com.minhduc.smartrestaurant.domain.request.ReqCategoryDTO;
+import com.minhduc.smartrestaurant.domain.response.ResCategoryDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.repository.CategoryRepository;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
@@ -21,8 +23,21 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category handleCreateCategory(Category category) {
-        return categoryRepository.save(category);
+    public ResCategoryDTO handleCreateCategory(ReqCategoryDTO reqCategoryDTO) {
+        Category category = new Category();
+        category.setName(reqCategoryDTO.getName());
+
+        Category savedCategory = categoryRepository.save(category);
+        return this.convertToResCategoryDTO(savedCategory);
+    }
+
+    public ResCategoryDTO convertToResCategoryDTO(Category category) {
+        ResCategoryDTO resCategoryDTO = new ResCategoryDTO();
+        resCategoryDTO.setId(category.getId());
+        resCategoryDTO.setName(category.getName());
+        resCategoryDTO.setCreatedAt(category.getCreatedAt());
+        resCategoryDTO.setCreatedBy(category.getCreatedBy());
+        return resCategoryDTO;
     }
 
     public Category fetchCategoryById(long id) throws IdInvalidException {

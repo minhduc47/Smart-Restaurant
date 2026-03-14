@@ -80,11 +80,11 @@ public class DatabaseInitializer implements CommandLineRunner {
             arr.add(new Permission("Upload a file", "/api/v1/files", "GET", "FILES"));
             this.permissionRepository.saveAll(arr);
         }
-        Role superAdminRole = this.roleRepository.findByName("SUPER_ADMIN");
+        Role superAdminRole = this.roleRepository.findByName("ADMIN");
         if (superAdminRole == null) {
             List<Permission> allPermissions = this.permissionRepository.findAll();
             Role adminRole = new Role();
-            adminRole.setName("SUPER_ADMIN");
+            adminRole.setName("ADMIN");
             adminRole.setDescription("Admin thì full permissions");
             adminRole.setActive(true);
             adminRole.setPermissions(allPermissions);

@@ -2,7 +2,7 @@ package com.minhduc.smartrestaurant.util;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,11 +53,16 @@ public class SecurityUtil {
 
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
-        // hardcode permission (for testing)
-        List<String> listAuthority = new ArrayList<String>();
 
-        listAuthority.add("ROLE_USER_CREATE");
-        listAuthority.add("ROLE_USER_UPDATE");
+        List<String> listAuthority = Optional.ofNullable(dto)
+            .map(ResLoginDTO::getUser)
+            .map(ResLoginDTO.UserLogin::getRole)
+            .map(ResLoginDTO.RoleUserLogin::getPermissions)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(item -> item.getMethod() + " " + item.getApiPath())
+            .toList();
+
         // Payload
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)

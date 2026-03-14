@@ -49,7 +49,7 @@ public class DishController {
         return ResponseEntity.status(HttpStatus.OK).body(dish);
     }
 
-    @GetMapping("/dishes")
+        @GetMapping("/dishes")
     @ApiMessage("Fetch all dishes with pagination")
     public ResponseEntity<ResultPaginationDTO> getAllDishes(@Filter Specification<Dish> spec, Pageable pageable) {
         return ResponseEntity.ok(this.dishService.fetchAllDishes(spec, pageable));

@@ -1,6 +1,7 @@
 package com.minhduc.smartrestaurant.controller;
 
-import java.security.Security;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -11,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +25,7 @@ import com.minhduc.smartrestaurant.domain.request.ReqLoginDTO;
 import com.minhduc.smartrestaurant.domain.request.ReqRegisterDTO;
 import com.minhduc.smartrestaurant.domain.response.ResCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResLoginDTO;
+import com.minhduc.smartrestaurant.domain.response.ResPermissionDTO;
 import com.minhduc.smartrestaurant.domain.response.ResLoginDTO.UserGetAccount;
 import com.minhduc.smartrestaurant.domain.response.ResLoginDTO.UserLogin;
 import com.minhduc.smartrestaurant.service.UserService;
@@ -67,14 +68,7 @@ public class AuthController {
         // Query database để lấy thông tin user sau đó gán vào UserLogin
         User currentUserDB = this.userService.handleGetUserByUsername(loginDTO.getUsername());
         if (currentUserDB != null) {
-            // Set Data into Inner class: UserLogin
-            UserLogin resUserLogin = res.new UserLogin();
-
-            resUserLogin.setId(currentUserDB.getId());
-            resUserLogin.setEmail(currentUserDB.getEmail());
-            resUserLogin.setName(currentUserDB.getName());
-            resUserLogin.setRole(currentUserDB.getRole());
-            res.setUser(resUserLogin);
+            res.setUser(this.mapUserLogin(currentUserDB));
         }
         // create access_token
         String access_token = this.securityUtil.createAccessToken(authentication.getName(), res);
@@ -105,17 +99,10 @@ public class AuthController {
 
         ResLoginDTO res = new ResLoginDTO();
         // Constructor Inner Class
-        UserLogin userLogin = res.new UserLogin();
-        UserGetAccount userGetAccount = res.new UserGetAccount();
+        UserGetAccount userGetAccount = new UserGetAccount();
         User currentUserDB = this.userService.handleGetUserByUsername(email);
         if (currentUserDB != null) {
-            // Set Data into Inner class: UserLogin
-            userLogin.setId(currentUserDB.getId());
-            userLogin.setEmail(currentUserDB.getEmail());
-            userLogin.setName(currentUserDB.getName());
-            // Set userLogin into UserGetAccount
-            userLogin.setRole(currentUserDB.getRole());
-            userGetAccount.setUser(userLogin);
+            userGetAccount.setUser(this.mapUserLogin(currentUserDB));
         }
 
         return ResponseEntity.ok().body(userGetAccount);
@@ -144,14 +131,7 @@ public class AuthController {
         // Query database để lấy thông tin user sau đó gán vào UserLogin
         User currentUserDB = this.userService.handleGetUserByUsername(email);
         if (currentUserDB != null) {
-            // Set Data into Inner class: UserLogin
-            UserLogin userLogin = res.new UserLogin();
-
-            userLogin.setId(currentUserDB.getId());
-            userLogin.setEmail(currentUserDB.getEmail());
-            userLogin.setName(currentUserDB.getName());
-            userLogin.setRole(currentUser.getRole());
-            res.setUser(userLogin);
+            res.setUser(this.mapUserLogin(currentUserDB));
         }
 
         // create new_access_token
@@ -215,5 +195,33 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(this.userService.convertToResCreateUserDTO(newUser));
+    }
+
+    private UserLogin mapUserLogin(User user) {
+        UserLogin userLogin = new UserLogin();
+        userLogin.setId(user.getId());
+        userLogin.setEmail(user.getEmail());
+        userLogin.setName(user.getName());
+        userLogin.setRole(this.mapRoleUserLogin(user));
+        return userLogin;
+    }
+
+    private ResLoginDTO.RoleUserLogin mapRoleUserLogin(User user) {
+        if (user.getRole() == null) {
+            return null;
+        }
+
+        List<ResPermissionDTO> permissions = user.getRole().getPermissions() == null
+                ? Collections.emptyList()
+                : user.getRole().getPermissions().stream()
+                        .map(item -> new ResPermissionDTO(
+                                item.getId(),
+                                item.getName(),
+                                item.getApiPath(),
+                                item.getMethod(),
+                                item.getModule()))
+                        .toList();
+
+        return new ResLoginDTO.RoleUserLogin(user.getRole().getId(), user.getRole().getName(), permissions);
     }
 }

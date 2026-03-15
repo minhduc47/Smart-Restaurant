@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.Role;
 import com.minhduc.smartrestaurant.domain.User;
+import com.minhduc.smartrestaurant.domain.request.ReqCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.request.ReqRegisterDTO;
 import com.minhduc.smartrestaurant.domain.response.ResCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResUpdateUserDTO;
@@ -32,18 +33,19 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User handleCreateUser(User user) {
-        // Logic to handle user creation
-        // check role
-        if (user.getRole() != null) {
-            Role role = this.roleService.fetchRoleById(user.getRole().getId());
-            user.setRole(role != null ? role : null);
-        } else {
-            Role defaultUserRole = this.roleService.findByName("USER");
-            if (defaultUserRole != null) {
-                user.setRole(defaultUserRole);
-            }
-        }
+    public User handleCreateUser(ReqCreateUserDTO userDTO) {
+        User user = new User();
+        user.setEmail(userDTO.getEmail());
+        user.setName(userDTO.getName());
+        user.setAge(userDTO.getAge());
+        user.setGender(userDTO.getGender());
+        user.setAddress(userDTO.getAddress());
+
+        Role role = this.roleService.fetchRoleById(userDTO.getRoleId());
+        user.setRole(role != null ? role : null);
+
+        user.setPassword(this.passwordEncoder.encode(userDTO.getPassword()));
+
         return this.userRepository.save(user);
     }
 

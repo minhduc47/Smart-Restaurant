@@ -2,6 +2,9 @@ package com.minhduc.smartrestaurant.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -80,9 +83,11 @@ public class DatabaseInitializer implements CommandLineRunner {
             arr.add(new Permission("Upload a file", "/api/v1/files", "GET", "FILES"));
             this.permissionRepository.saveAll(arr);
         }
+
+        List<Permission> allPermissions = this.permissionRepository.findAll();
+
         Role superAdminRole = this.roleRepository.findByName("ADMIN");
         if (superAdminRole == null) {
-            List<Permission> allPermissions = this.permissionRepository.findAll();
             Role adminRole = new Role();
             adminRole.setName("ADMIN");
             adminRole.setDescription("Admin thì full permissions");
@@ -93,11 +98,29 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         Role userRole = this.roleRepository.findByName("USER");
         if (userRole == null) {
+            Map<String, Permission> permissionByMethodAndPath = allPermissions.stream()
+                    .collect(Collectors.toMap(
+                            permission -> permission.getMethod() + ":" + permission.getApiPath(),
+                            permission -> permission,
+                            (existing, replacement) -> existing));
+
+            Set<String> userPermissionKeys = Set.of(
+                    "POST:/api/v1/orders",
+                    "GET:/api/v1/dishes",
+                    "GET:/api/v1/categories",
+                    "GET:/api/v1/dishes/{id}",
+                    "GET:/api/v1/categories/{id}");
+
+            List<Permission> userPermissions = userPermissionKeys.stream()
+                    .map(permissionByMethodAndPath::get)
+                    .filter(permission -> permission != null)
+                    .collect(Collectors.toList());
+
             Role defaultUserRole = new Role();
             defaultUserRole.setName("USER");
             defaultUserRole.setDescription("Người dùng mặc định");
             defaultUserRole.setActive(true);
-            defaultUserRole.setPermissions(new ArrayList<>());
+            defaultUserRole.setPermissions(userPermissions);
             this.roleRepository.save(defaultUserRole);
         }
         if (countUsers == 0) {

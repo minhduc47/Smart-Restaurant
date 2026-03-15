@@ -56,7 +56,7 @@ public class OrderService {
 
             RestaurantTable table = tableOpt.get();
             if (table.getOccupied() == TableEnum.OCCUPIED) {
-                throw new IdInvalidException("Bàn " + table.getName() + " hiện đang có khách ngồi!");
+                throw new IdInvalidException(table.getName() + " hiện đang có khách ngồi!");
             }
 
             if (table.getOccupied() == TableEnum.RESERVED) {

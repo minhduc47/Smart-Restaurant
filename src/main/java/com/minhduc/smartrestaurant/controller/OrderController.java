@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,8 @@ import com.minhduc.smartrestaurant.service.OrderService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
+
+import io.swagger.v3.oas.annotations.Parameter;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -53,7 +56,9 @@ public class OrderController {
 
     @GetMapping("/orders")
     @ApiMessage("Fetch all orders")
-    public ResponseEntity<ResultPaginationDTO> fetchAllOrders(@Filter Specification<Order> spec, Pageable pageable) {
+    public ResponseEntity<ResultPaginationDTO> fetchAllOrders(
+            @Parameter(name = "filter", description = "Query filter (VD: name ~ 'duck')") @Filter Specification<Order> spec,
+            @ParameterObject Pageable pageable) {
         ResultPaginationDTO result = orderService.fetchAllOrders(spec, pageable);
         return ResponseEntity.ok(result);
     }

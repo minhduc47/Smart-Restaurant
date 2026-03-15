@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.User;
+import com.minhduc.smartrestaurant.domain.request.ReqCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResUpdateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResUserDTO;
@@ -32,20 +32,23 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import org.springdoc.core.annotations.ParameterObject;
+
+import io.swagger.v3.oas.annotations.Parameter;
+
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/users")
     @ApiMessage("Create a new user")
-    public ResponseEntity<ResCreateUserDTO> createUser(@Valid @RequestBody User userRequest) throws IdInvalidException {
+    public ResponseEntity<ResCreateUserDTO> createUser(@Valid @RequestBody ReqCreateUserDTO userRequest)
+            throws IdInvalidException {
         // check email exist in database
         boolean isEmailExist = this.userService.isEmailExist(userRequest.getEmail());
 
@@ -53,8 +56,6 @@ public class UserController {
             throw new IdInvalidException(
                     "Email " + userRequest.getEmail() + " đã tồn tại, vui lòng sử dụng email khác.");
         }
-        String hashPasword = this.passwordEncoder.encode(userRequest.getPassword());
-        userRequest.setPassword(hashPasword);
         User newUser = this.userService.handleCreateUser(userRequest);
         ResCreateUserDTO resCreateUserDTO = this.userService.convertToResCreateUserDTO(newUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(resCreateUserDTO);
@@ -73,7 +74,9 @@ public class UserController {
 
     @GetMapping("/users")
     @ApiMessage("fetch all users")
-    public ResponseEntity<ResultPaginationDTO> getAllUsers(@Filter Specification<User> spec, Pageable pageable) {
+    public ResponseEntity<ResultPaginationDTO> getAllUsers(
+            @Parameter(name = "filter", description = "Query filter (VD: name ~ 'duck')") @Filter Specification<User> spec,
+            @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(this.userService.fetchAllUsers(spec, pageable));
     }
 

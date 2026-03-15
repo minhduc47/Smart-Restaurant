@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springdoc.core.annotations.ParameterObject;
 
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.request.ReqCategoryDTO;
@@ -21,6 +22,8 @@ import com.minhduc.smartrestaurant.service.CategoryService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
+
+import io.swagger.v3.oas.annotations.Parameter;
 
 import jakarta.validation.Valid;
 
@@ -49,7 +52,9 @@ public class CategoryController {
 
     @GetMapping("/categories")
     @ApiMessage("Fetch all categories with pagination")
-    public ResponseEntity<ResultPaginationDTO> getCategories(@Filter Specification<Category> spec, Pageable pageable) {
+    public ResponseEntity<ResultPaginationDTO> getCategories(
+            @Parameter(name = "filter", description = "Query filter (VD: name ~ 'duck')") @Filter Specification<Category> spec,
+            @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(this.categoryService.fetchCategories(spec, pageable));
     }
 

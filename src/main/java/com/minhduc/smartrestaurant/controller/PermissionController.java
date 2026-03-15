@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,8 @@ import com.minhduc.smartrestaurant.service.PermissionService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
+
+import io.swagger.v3.oas.annotations.Parameter;
 
 import jakarta.validation.Valid;
 
@@ -73,8 +76,9 @@ public class PermissionController {
 
     @GetMapping("/permissions")
     @ApiMessage("Fetch permissions with pagination")
-    public ResponseEntity<ResultPaginationDTO> getAllPermissions(@Filter Specification<Permission> spec,
-            Pageable pageable) {
+    public ResponseEntity<ResultPaginationDTO> getAllPermissions(
+            @Parameter(name = "filter", description = "Query filter (VD: name ~ 'duck')") @Filter Specification<Permission> spec,
+            @ParameterObject Pageable pageable) {
         ResultPaginationDTO listPermissions = this.permissionService.fetchAllPermissions(spec, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(listPermissions);

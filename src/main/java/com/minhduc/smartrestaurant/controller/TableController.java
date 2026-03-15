@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,8 @@ import com.minhduc.smartrestaurant.service.TableService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
+
+import io.swagger.v3.oas.annotations.Parameter;
 
 import jakarta.validation.Valid;
 
@@ -50,8 +53,9 @@ public class TableController {
 
     @GetMapping
     @ApiMessage("Fetch all tables with pagination")
-    public ResponseEntity<ResultPaginationDTO> getAllTables(@Filter Specification<RestaurantTable> spec,
-            Pageable pageable) {
+    public ResponseEntity<ResultPaginationDTO> getAllTables(
+            @Parameter(name = "filter", description = "Query filter (VD: name ~ 'duck')") @Filter Specification<RestaurantTable> spec,
+            @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(this.tableService.fetchAllTables(spec, pageable));
     }
 

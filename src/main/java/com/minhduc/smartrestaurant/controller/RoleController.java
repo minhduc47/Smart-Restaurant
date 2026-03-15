@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,8 @@ import com.minhduc.smartrestaurant.service.RoleService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
+
+import io.swagger.v3.oas.annotations.Parameter;
 
 import jakarta.validation.Valid;
 
@@ -68,7 +71,9 @@ public class RoleController {
 
     @GetMapping("/roles")
     @ApiMessage("Get role with pagination")
-    public ResponseEntity<ResultPaginationDTO> getAllRoles(@Filter Specification<Role> spec, Pageable pageable) {
+    public ResponseEntity<ResultPaginationDTO> getAllRoles(
+            @Parameter(name = "filter", description = "Query filter (VD: name ~ 'duck')") @Filter Specification<Role> spec,
+            @ParameterObject Pageable pageable) {
         ResultPaginationDTO listRoles = this.roleService.fetchAllRoles(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listRoles);
     }

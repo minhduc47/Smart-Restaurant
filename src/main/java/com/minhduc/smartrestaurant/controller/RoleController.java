@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.Role;
-import com.minhduc.smartrestaurant.domain.request.ReqRoleDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqCreateRoleDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqUpdateRoleDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.RoleService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
@@ -38,7 +39,8 @@ public class RoleController {
 
     @PostMapping("/roles")
     @ApiMessage("create a role")
-    public ResponseEntity<Role> createNewRole(@Valid @RequestBody ReqRoleDTO requestRole) throws IdInvalidException {
+    public ResponseEntity<Role> createNewRole(@Valid @RequestBody ReqCreateRoleDTO requestRole)
+            throws IdInvalidException {
         // check name exist
         boolean isExistName = this.roleService.existByName(requestRole.getName());
         if (isExistName) {
@@ -51,11 +53,7 @@ public class RoleController {
 
     @PutMapping("/roles")
     @ApiMessage("Update a role")
-    public ResponseEntity<Role> updateRole(@Valid @RequestBody ReqRoleDTO requestRole) throws IdInvalidException {
-        if (requestRole.getId() == null) {
-            throw new IdInvalidException("id không được để trống");
-        }
-
+    public ResponseEntity<Role> updateRole(@Valid @RequestBody ReqUpdateRoleDTO requestRole) throws IdInvalidException {
         // check id exist
         Role currentRole = this.roleService.fetchRoleById(requestRole.getId());
         if (currentRole == null) {

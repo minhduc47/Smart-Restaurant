@@ -3,7 +3,6 @@ package com.minhduc.smartrestaurant.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Permission;
 import com.minhduc.smartrestaurant.domain.Role;
-import com.minhduc.smartrestaurant.domain.request.ReqRoleDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqCreateRoleDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqUpdateRoleDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO.Meta;
 import com.minhduc.smartrestaurant.repository.PermissionRepository;
@@ -33,7 +33,7 @@ public class RoleService {
         return this.roleRepository.existsByName(name);
     }
 
-    public Role handleCreateRole(ReqRoleDTO requestRole) {
+    public Role handleCreateRole(ReqCreateRoleDTO requestRole) {
         Role role = new Role();
         role.setName(requestRole.getName());
         role.setDescription(requestRole.getDescription());
@@ -52,7 +52,7 @@ public class RoleService {
         return null;
     }
 
-    public Role updateRole(ReqRoleDTO requestRole, Role currentRole) {
+    public Role updateRole(ReqUpdateRoleDTO requestRole, Role currentRole) {
         currentRole.setName(requestRole.getName());
         currentRole.setDescription(requestRole.getDescription());
         currentRole.setActive(requestRole.isActive());

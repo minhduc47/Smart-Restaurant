@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.Permission;
+import com.minhduc.smartrestaurant.domain.request.ReqCreatePermissionDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqUpdatePermissionDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.PermissionService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
@@ -37,9 +39,8 @@ public class PermissionController {
 
     @PostMapping("/permissions")
     @ApiMessage("Create a permission")
-    public ResponseEntity<Permission> createNewPermission(@Valid @RequestBody Permission requestPermission)
+    public ResponseEntity<Permission> createNewPermission(@Valid @RequestBody ReqCreatePermissionDTO requestPermission)
             throws IdInvalidException {
-        // check module, apiPath, method exist
         boolean isPermissionExist = this.permissionService.isPermissionExist(requestPermission);
         if (isPermissionExist) {
             throw new IdInvalidException("Permission đã tồn tại");
@@ -51,18 +52,15 @@ public class PermissionController {
 
     @PutMapping("/permissions")
     @ApiMessage("Update a permission")
-    public ResponseEntity<Permission> updatePermission(@Valid @RequestBody Permission requestPermission)
+    public ResponseEntity<Permission> updatePermission(@Valid @RequestBody ReqUpdatePermissionDTO requestPermission)
             throws IdInvalidException {
-        // check id exist
         Permission currentPermission = this.permissionService.fetchPermissionById(requestPermission.getId());
         if (currentPermission == null) {
             throw new IdInvalidException("Permission với id = " + requestPermission.getId() + " không tồn tại");
         }
 
-        // check module, apiPath, method exist
-        boolean isPermissionExist = this.permissionService.isPermissionExist(requestPermission);
+        boolean isPermissionExist = this.permissionService.isPermissionExistForUpdate(requestPermission);
         if (isPermissionExist) {
-            // check name
             if (this.permissionService.isSameName(requestPermission)) {
                 throw new IdInvalidException("Permission đã tồn tại.");
             }
@@ -87,7 +85,6 @@ public class PermissionController {
     @DeleteMapping("/permissions/{id}")
     @ApiMessage("Delete a permission")
     public ResponseEntity<Void> deletePermission(@PathVariable("id") long id) throws IdInvalidException {
-        // check id exist
         Permission currentPermission = this.permissionService.fetchPermissionById(id);
         if (currentPermission == null) {
             throw new IdInvalidException("Permission với id = " + id + " không tồn tại");

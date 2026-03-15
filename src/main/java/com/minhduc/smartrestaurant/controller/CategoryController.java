@@ -16,6 +16,7 @@ import org.springdoc.core.annotations.ParameterObject;
 
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.request.ReqCategoryDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqUpdateCategoryDTO;
 import com.minhduc.smartrestaurant.domain.response.ResCategoryDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.CategoryService;
@@ -60,8 +61,9 @@ public class CategoryController {
 
     @PutMapping("/categories")
     @ApiMessage("Update a category")
-    public ResponseEntity<Category> updateCategory(@RequestBody Category category) throws IdInvalidException {
-        Category updateCategory = categoryService.handleUpdateCategory(category);
+    public ResponseEntity<Category> updateCategory(@Valid @RequestBody ReqUpdateCategoryDTO reqCategoryDTO)
+            throws IdInvalidException {
+        Category updateCategory = categoryService.handleUpdateCategory(reqCategoryDTO);
         return ResponseEntity.status(HttpStatus.OK).body(updateCategory);
     }
 

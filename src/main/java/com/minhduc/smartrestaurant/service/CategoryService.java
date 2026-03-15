@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.request.ReqCategoryDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqUpdateCategoryDTO;
 import com.minhduc.smartrestaurant.domain.response.ResCategoryDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.repository.CategoryRepository;
@@ -62,10 +63,9 @@ public class CategoryService {
         return result;
     }
 
-    public Category handleUpdateCategory(Category category) throws IdInvalidException {
-        // Logic to handle category update
-        Category existCategory = fetchCategoryById(category.getId());
-        existCategory.setName(category.getName());
+    public Category handleUpdateCategory(ReqUpdateCategoryDTO reqCategoryDTO) throws IdInvalidException {
+        Category existCategory = fetchCategoryById(reqCategoryDTO.getId());
+        existCategory.setName(reqCategoryDTO.getName());
         existCategory = this.categoryRepository.save(existCategory);
         return existCategory;
     }

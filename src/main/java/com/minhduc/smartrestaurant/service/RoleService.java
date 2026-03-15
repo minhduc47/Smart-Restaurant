@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Permission;
 import com.minhduc.smartrestaurant.domain.Role;
+import com.minhduc.smartrestaurant.domain.request.ReqRoleDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO.Meta;
 import com.minhduc.smartrestaurant.repository.PermissionRepository;
@@ -32,30 +33,14 @@ public class RoleService {
         return this.roleRepository.existsByName(name);
     }
 
-    /**
-     * @param requestRole
-     * @return
-     */
-    public Role handleCreateRole(Role requestRole) {
-        // if permission exist
-        if (requestRole.getPermissions() != null) {
-            // List<Long> listPermissionId = requestRole.getPermissions()
-            // .stream().map(item -> item.getId())
-            // .collect(Collectors.toList());
-            List<Long> listPermissionId = new ArrayList<>();
-            List<Permission> permissions = requestRole.getPermissions();
+    public Role handleCreateRole(ReqRoleDTO requestRole) {
+        Role role = new Role();
+        role.setName(requestRole.getName());
+        role.setDescription(requestRole.getDescription());
+        role.setActive(requestRole.isActive());
+        role.setPermissions(resolvePermissionsByIds(requestRole.getPermissionIds()));
 
-            for (int i = 0; i < permissions.size(); i++) {
-                listPermissionId.add(permissions.get(i).getId());
-            }
-
-            List<Permission> listPermissions = this.permissionRepository.findByIdIn(listPermissionId);
-
-            // RequestRole chỉ có thông tin của Id Permission và sau khi tìm
-            // Set tất cả Attribute của Permission vào RequestRole
-            requestRole.setPermissions(listPermissions);
-        }
-        return this.roleRepository.save(requestRole);
+        return this.roleRepository.save(role);
     }
 
     public Role fetchRoleById(long id) {
@@ -67,32 +52,22 @@ public class RoleService {
         return null;
     }
 
-    public Role updateRole(Role requestRole, Role currentRole) {
-        // if permission exist
-        if (requestRole.getPermissions() != null) {
-            // List<Long> listPermissionId = requestRole.getPermissions()
-            // .stream().map(item -> item.getId())
-            // .collect(Collectors.toList());
-            List<Long> listPermissionId = new ArrayList<>();
-            List<Permission> permissions = requestRole.getPermissions();
-
-            for (Permission p : permissions) {
-                listPermissionId.add(p.getId());
-            }
-
-            List<Permission> listPermissions = this.permissionRepository.findByIdIn(listPermissionId);
-
-            // set permission
-            currentRole.setPermissions(listPermissions);
-        }
-
+    public Role updateRole(ReqRoleDTO requestRole, Role currentRole) {
         currentRole.setName(requestRole.getName());
         currentRole.setDescription(requestRole.getDescription());
         currentRole.setActive(requestRole.isActive());
+        currentRole.setPermissions(resolvePermissionsByIds(requestRole.getPermissionIds()));
 
         currentRole = this.roleRepository.save(currentRole);
 
         return currentRole;
+    }
+
+    private List<Permission> resolvePermissionsByIds(List<Long> permissionIds) {
+        if (permissionIds == null || permissionIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return this.permissionRepository.findByIdIn(permissionIds);
     }
 
     public ResultPaginationDTO fetchAllRoles(Specification<Role> spec, Pageable pageable) {

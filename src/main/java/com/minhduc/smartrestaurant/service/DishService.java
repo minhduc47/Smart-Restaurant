@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.Dish;
 import com.minhduc.smartrestaurant.domain.request.DishRequestDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqUpdateDishDTO;
 import com.minhduc.smartrestaurant.domain.response.DishResponseDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.repository.DishRepository;
@@ -79,21 +80,20 @@ public class DishService {
         return result;
     }
 
-    public Dish handleUpdateDish(Dish dish) throws IdInvalidException {
-        // Logic to handle dish update
-        Dish existDish = fetchDishById(dish.getId());
-        existDish.setName(dish.getName());
-        existDish.setDescription(dish.getDescription());
-        existDish.setPrice(dish.getPrice());
-        existDish.setImage(dish.getImage());
-        existDish.setActive(dish.isActive());
-        if (dish.getCategory() != null) {
-            Category category = this.categoryService.fetchCategoryById(dish.getCategory().getId());
+    public Dish handleUpdateDish(ReqUpdateDishDTO reqDTO) throws IdInvalidException {
+        Dish existDish = fetchDishById(reqDTO.getId());
+        existDish.setName(reqDTO.getName());
+        existDish.setDescription(reqDTO.getDescription());
+        existDish.setPrice(reqDTO.getPrice());
+        existDish.setImage(reqDTO.getImage());
+        existDish.setActive(reqDTO.isActive());
+
+        if (reqDTO.getCategoryId() != null) {
+            Category category = this.categoryService.fetchCategoryById(reqDTO.getCategoryId());
             existDish.setCategory(category);
-        } else {
-            throw new IdInvalidException("Category không được để trống");
         }
-        return existDish;
+
+        return this.dishRepository.save(existDish);
     }
 
     public void handleDeleteDish(long id) throws IdInvalidException {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.Dish;
 import com.minhduc.smartrestaurant.domain.request.DishRequestDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqUpdateDishDTO;
 import com.minhduc.smartrestaurant.domain.response.DishResponseDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.service.DishService;
@@ -62,8 +63,8 @@ public class DishController {
 
     @PutMapping("/dishes")
     @ApiMessage("Update a dish")
-    public ResponseEntity<Dish> updateDish(@Valid @RequestBody Dish dish) throws IdInvalidException {
-        Dish updatedDish = dishService.handleUpdateDish(dish);
+    public ResponseEntity<Dish> updateDish(@Valid @RequestBody ReqUpdateDishDTO reqDTO) throws IdInvalidException {
+        Dish updatedDish = dishService.handleUpdateDish(reqDTO);
         return ResponseEntity.status(HttpStatus.OK).body(updatedDish);
     }
 

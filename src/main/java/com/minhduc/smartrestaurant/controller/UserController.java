@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.User;
 import com.minhduc.smartrestaurant.domain.request.ReqCreateUserDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqUpdateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResUpdateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResUserDTO;
@@ -82,13 +83,12 @@ public class UserController {
 
     @PutMapping("/users")
     @ApiMessage("Update a user")
-    public ResponseEntity<ResUpdateUserDTO> updateUser(@RequestBody User requestUser) throws IdInvalidException {
-        User fetchUserById = this.userService.fetchUserById(requestUser.getId());
-        if (fetchUserById == null) {
+    public ResponseEntity<ResUpdateUserDTO> updateUser(@Valid @RequestBody ReqUpdateUserDTO requestUser)
+            throws IdInvalidException {
+        User userUpdate = this.userService.handleUpdateUser(requestUser);
+        if (userUpdate == null) {
             throw new IdInvalidException("User với id = " + requestUser.getId() + " không tồn tại");
         }
-
-        User userUpdate = this.userService.handleUpdateUser(requestUser);
 
         ResUpdateUserDTO res = this.userService.convertToResUpdateUserDTO(userUpdate);
         return ResponseEntity.ok(res);

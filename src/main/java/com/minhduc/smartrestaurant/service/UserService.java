@@ -15,6 +15,7 @@ import com.minhduc.smartrestaurant.domain.Role;
 import com.minhduc.smartrestaurant.domain.User;
 import com.minhduc.smartrestaurant.domain.request.ReqCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.request.ReqRegisterDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqUpdateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResUpdateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResUserDTO;
@@ -76,22 +77,25 @@ public class UserService {
         return result;
     }
 
-    public User handleUpdateUser(User userDetails) {
-        // Logic to handle user update
-        User user = fetchUserById(userDetails.getId());
-        if (user != null) {
-            user.setAddress(userDetails.getAddress());
-            user.setName(userDetails.getName());
-            user.setGender(userDetails.getGender());
-            user.setAge(userDetails.getAge());
-            // check role exist
-            if (userDetails.getRole() != null) {
-                Role role = this.roleService.fetchRoleById(userDetails.getRole().getId());
-                user.setRole(role != null ? role : null);
-            }
-            user = this.userRepository.save(user);
-
+    public User handleUpdateUser(ReqUpdateUserDTO userDetails) {
+        Optional<User> userOptional = this.userRepository.findById(userDetails.getId());
+        if (userOptional.isEmpty()) {
+            return null;
         }
+
+        User user = userOptional.get();
+        user.setAddress(userDetails.getAddress());
+        user.setName(userDetails.getName());
+        user.setGender(userDetails.getGender());
+        user.setAge(userDetails.getAge());
+
+        if (userDetails.getRoleId() != null) {
+            Role role = this.roleService.fetchRoleById(userDetails.getRoleId());
+            user.setRole(role != null ? role : null);
+        }
+
+        user = this.userRepository.save(user);
+
         return user;
     }
 

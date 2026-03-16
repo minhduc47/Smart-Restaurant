@@ -53,6 +53,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(whiteList).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/dishes").permitAll()
+                        .requestMatchers("/api/v1/payments/vnpay/ipn").permitAll()
+                        .requestMatchers("/api/v1/payments/vnpay/return").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(customAuthenticationEntryPoint))

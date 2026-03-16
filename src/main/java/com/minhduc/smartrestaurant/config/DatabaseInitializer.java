@@ -83,7 +83,9 @@ public class DatabaseInitializer implements CommandLineRunner {
         arr.add(new Permission("Download a file", "/api/v1/files", "POST", "FILES"));
         arr.add(new Permission("Upload a file", "/api/v1/files", "GET", "FILES"));
         arr.add(new Permission("Payment a order", "/api/v1/payments/checkout", "POST", "PAYMENTS"));
-
+        arr.add(new Permission("Create VNPay payment url", "/api/v1/payments/vnpay/create", "POST", "PAYMENTS"));
+        arr.add(new Permission("Handle VNPay IPN", "/api/v1/payments/vnpay/ipn", "GET", "PAYMENTS"));
+        arr.add(new Permission("Handle VNPay return", "/api/v1/payments/vnpay/return", "GET", "PAYMENTS"));
         List<Permission> dbPermissions = this.permissionRepository.findAll();
         Map<String, Permission> permissionByMethodAndPath = dbPermissions.stream()
                 .collect(Collectors.toMap(

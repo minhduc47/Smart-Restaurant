@@ -64,15 +64,14 @@ public class PaymentService {
         payment.setStatus(PaymentStatusEnum.PAID);
         payment.setTransactionRef(null);
 
-        Order savedOrder = this.orderRepository.save(order);
         Payment savedPayment = this.paymentRepository.save(payment);
 
         ResPaymentDTO resDTO = new ResPaymentDTO();
-        resDTO.setOrderId(savedOrder.getId());
-        resDTO.setAmount(savedOrder.getTotalPrice());
+        resDTO.setOrderId(order.getId());
+        resDTO.setAmount(order.getTotalPrice());
         resDTO.setPaidAt(
                 savedPayment.getUpdatedAt() != null ? savedPayment.getUpdatedAt() : savedPayment.getCreatedAt());
-        resDTO.setTableStatus(savedOrder.getRestaurantTable() != null ? savedOrder.getRestaurantTable().getOccupied()
+        resDTO.setTableStatus(order.getRestaurantTable() != null ? order.getRestaurantTable().getOccupied()
                 : TableEnum.AVAILABLE);
 
         return resDTO;

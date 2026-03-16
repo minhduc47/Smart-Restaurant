@@ -1,15 +1,13 @@
 package com.minhduc.smartrestaurant.domain;
 
-import com.minhduc.smartrestaurant.util.constant.GenderEnum;
 import com.minhduc.smartrestaurant.util.constant.PaymentMethodEnum;
 import com.minhduc.smartrestaurant.util.constant.PaymentStatusEnum;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
@@ -26,8 +24,10 @@ public class Payment extends BaseEntity {
     @Id
     private long id;
     private long amount;
+    @Column(columnDefinition = "VARCHAR(30)")
     @Enumerated(EnumType.STRING)
     private PaymentMethodEnum paymentMethod;
+    @Column(columnDefinition = "VARCHAR(30)")
     @Enumerated(EnumType.STRING)
     private PaymentStatusEnum status;
     private String transactionRef;

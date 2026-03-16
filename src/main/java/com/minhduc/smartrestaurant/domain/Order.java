@@ -9,6 +9,7 @@ import com.minhduc.smartrestaurant.util.constant.PaymentMethodEnum;
 import com.minhduc.smartrestaurant.util.constant.PaymentStatusEnum;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -38,8 +39,10 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatusEnum status;
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(30)")
     private PaymentStatusEnum paymentStatus;
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(30)")
     private PaymentMethodEnum paymentMethod;
     @Enumerated(EnumType.STRING)
     private OrderEnum orderType;

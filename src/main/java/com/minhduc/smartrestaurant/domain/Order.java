@@ -5,6 +5,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.minhduc.smartrestaurant.util.constant.OrderEnum;
 import com.minhduc.smartrestaurant.util.constant.OrderStatusEnum;
+import com.minhduc.smartrestaurant.util.constant.PaymentMethodEnum;
+import com.minhduc.smartrestaurant.util.constant.PaymentStatusEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -35,6 +37,10 @@ public class Order extends BaseEntity {
     private long totalPrice;
     @Enumerated(EnumType.STRING)
     private OrderStatusEnum status;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatusEnum paymentStatus;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethodEnum paymentMethod;
     @Enumerated(EnumType.STRING)
     private OrderEnum orderType;
     private String note;

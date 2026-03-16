@@ -22,6 +22,7 @@ import com.minhduc.smartrestaurant.repository.OrderRepository;
 import com.minhduc.smartrestaurant.repository.RestaurantTableRepository;
 import com.minhduc.smartrestaurant.util.constant.OrderEnum;
 import com.minhduc.smartrestaurant.util.constant.OrderStatusEnum;
+import com.minhduc.smartrestaurant.util.constant.PaymentStatusEnum;
 import com.minhduc.smartrestaurant.util.constant.TableEnum;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 
@@ -42,6 +43,7 @@ public class OrderService {
     public Order handleCreateOrder(ReqCreateOrderDTO reqDTO) throws IdInvalidException {
         Order order = new Order();
         order.setStatus(OrderStatusEnum.PENDING);
+        order.setPaymentStatus(PaymentStatusEnum.PENDING);
         order.setOrderType(reqDTO.getOrderType());
         order.setNote(reqDTO.getNote());
         if (reqDTO.getOrderType().equals(OrderEnum.IN_STORE)) {

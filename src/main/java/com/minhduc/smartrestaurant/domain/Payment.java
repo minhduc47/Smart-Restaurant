@@ -1,7 +1,7 @@
 package com.minhduc.smartrestaurant.domain;
 
 import com.minhduc.smartrestaurant.util.constant.GenderEnum;
-import com.minhduc.smartrestaurant.util.constant.PaymentEnum;
+import com.minhduc.smartrestaurant.util.constant.PaymentMethodEnum;
 import com.minhduc.smartrestaurant.util.constant.PaymentStatusEnum;
 
 import jakarta.persistence.Entity;
@@ -27,7 +27,7 @@ public class Payment extends BaseEntity {
     private long id;
     private long amount;
     @Enumerated(EnumType.STRING)
-    private PaymentEnum paymentMethod;
+    private PaymentMethodEnum paymentMethod;
     @Enumerated(EnumType.STRING)
     private PaymentStatusEnum status;
     private String transactionRef;

@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,12 +16,14 @@ import com.minhduc.smartrestaurant.domain.Dish;
 import com.minhduc.smartrestaurant.domain.Order;
 import com.minhduc.smartrestaurant.domain.OrderDetail;
 import com.minhduc.smartrestaurant.domain.RestaurantTable;
+import com.minhduc.smartrestaurant.domain.User;
 import com.minhduc.smartrestaurant.domain.request.ReqCreateOrderDTO;
 import com.minhduc.smartrestaurant.domain.response.ResOrderDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.repository.DishRepository;
 import com.minhduc.smartrestaurant.repository.OrderRepository;
 import com.minhduc.smartrestaurant.repository.RestaurantTableRepository;
+import com.minhduc.smartrestaurant.repository.UserRepository;
 import com.minhduc.smartrestaurant.util.constant.OrderEnum;
 import com.minhduc.smartrestaurant.util.constant.OrderStatusEnum;
 import com.minhduc.smartrestaurant.util.constant.PaymentStatusEnum;
@@ -31,17 +35,33 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final DishRepository dishRepository;
     private final RestaurantTableRepository restaurantTableRepository;
+    private final UserRepository userRepository;
 
     public OrderService(OrderRepository orderRepository, DishRepository dishRepository,
-            RestaurantTableRepository restaurantTableRepository) {
+            RestaurantTableRepository restaurantTableRepository, UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.dishRepository = dishRepository;
         this.restaurantTableRepository = restaurantTableRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional(rollbackFor = Exception.class)
     public Order handleCreateOrder(ReqCreateOrderDTO reqDTO) throws IdInvalidException {
         Order order = new Order();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new IdInvalidException("Không tìm thấy thông tin người dùng đang đăng nhập");
+        }
+
+        String email = authentication.getName();
+        User currentUser = this.userRepository.findByEmail(email);
+        if (currentUser == null) {
+            throw new IdInvalidException("Không tìm thấy người dùng với email = " + email);
+        }
+        order.setUser(currentUser);
+
         order.setStatus(OrderStatusEnum.PENDING);
         order.setPaymentStatus(PaymentStatusEnum.PENDING);
         order.setOrderType(reqDTO.getOrderType());

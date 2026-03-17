@@ -15,6 +15,7 @@ import com.minhduc.smartrestaurant.domain.request.ReqCreateVNPayDTO;
 import com.minhduc.smartrestaurant.domain.response.ResPaymentDTO;
 import com.minhduc.smartrestaurant.repository.OrderRepository;
 import com.minhduc.smartrestaurant.repository.PaymentRepository;
+import com.minhduc.smartrestaurant.repository.RestaurantTableRepository;
 import com.minhduc.smartrestaurant.util.constant.OrderStatusEnum;
 import com.minhduc.smartrestaurant.util.constant.PaymentMethodEnum;
 import com.minhduc.smartrestaurant.util.constant.PaymentStatusEnum;
@@ -25,12 +26,14 @@ import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 public class PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
+    private final RestaurantTableRepository restaurantTableRepository;
     private final VNPayService vnPayService;
 
     public PaymentService(OrderRepository orderRepository, PaymentRepository paymentRepository,
-            VNPayService vnPayService) {
+            RestaurantTableRepository restaurantTableRepository, VNPayService vnPayService) {
         this.orderRepository = orderRepository;
         this.paymentRepository = paymentRepository;
+        this.restaurantTableRepository = restaurantTableRepository;
         this.vnPayService = vnPayService;
     }
 
@@ -174,6 +177,36 @@ public class PaymentService {
             return response;
         }
 
+        this.processOrderPayment(txnRef, vnpTransactionNo, vnpAmount);
+
+        response.put("RspCode", "00");
+        response.put("Message", "Confirm success");
+        return response;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    private void processOrderPayment(String txnRef, String vnpTransactionNo, String vnpAmount) {
+        Long orderId;
+        long paidAmount;
+
+        try {
+            orderId = Long.parseLong(txnRef);
+            paidAmount = Long.parseLong(vnpAmount);
+        } catch (Exception e) {
+            return;
+        }
+
+        Order order = this.orderRepository.findById(orderId).orElse(null);
+        if (order == null || order.getStatus() == OrderStatusEnum.PAID
+                || order.getPaymentStatus() == PaymentStatusEnum.PAID) {
+            return;
+        }
+
+        long expectedAmount = order.getTotalPrice() * 100;
+        if (expectedAmount != paidAmount) {
+            return;
+        }
+
         order.setStatus(OrderStatusEnum.PAID);
         order.setPaymentStatus(PaymentStatusEnum.PAID);
         order.setPaymentMethod(PaymentMethodEnum.VNPAY);
@@ -181,6 +214,7 @@ public class PaymentService {
         RestaurantTable table = order.getRestaurantTable();
         if (table != null) {
             table.setOccupied(TableEnum.AVAILABLE);
+            this.restaurantTableRepository.save(table);
         }
 
         Payment payment = order.getPayment();
@@ -189,18 +223,18 @@ public class PaymentService {
             payment.setOrder(order);
             order.setPayment(payment);
         }
+
         payment.setAmount(order.getTotalPrice());
         payment.setPaymentMethod(PaymentMethodEnum.VNPAY);
         payment.setStatus(PaymentStatusEnum.PAID);
         payment.setTransactionRef(vnpTransactionNo);
 
-        this.paymentRepository.save(payment);
+        this.orderRepository.save(order);
 
-        response.put("RspCode", "00");
-        response.put("Message", "Confirm success");
-        return response;
+        System.out.println(">>> Đã cập nhật DB cho đơn hàng: " + orderId);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> handleVNPayReturn(Map<String, String> params) throws UnsupportedEncodingException {
         Map<String, Object> response = new HashMap<>();
 
@@ -214,6 +248,11 @@ public class PaymentService {
         response.put("validSignature", validSignature);
 
         boolean success = validSignature && "00".equals(responseCode);
+
+        if (success) {
+            this.processOrderPayment(txnRef, params.get("vnp_TransactionNo"), params.get("vnp_Amount"));
+        }
+
         response.put("success", success);
         response.put("message", success ? "Thanh toán thành công" : "Thanh toán thất bại");
 

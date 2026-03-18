@@ -20,10 +20,13 @@ import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 public class DishService {
     private final DishRepository dishRepository;
     private final CategoryService categoryService;
+    private final SubscriberService subscriberService;
 
-    public DishService(DishRepository dishRepository, CategoryService categoryService) {
+    public DishService(DishRepository dishRepository, CategoryService categoryService,
+            SubscriberService subscriberService) {
         this.dishRepository = dishRepository;
         this.categoryService = categoryService;
+        this.subscriberService = subscriberService;
 
     }
 
@@ -38,7 +41,9 @@ public class DishService {
         dish.setCategory(category);
         dish.setActive(true);
 
-        return dishRepository.save(dish);
+        Dish savedDish = dishRepository.save(dish);
+        this.subscriberService.sendNotificationForNewDish(savedDish);
+        return savedDish;
     }
 
     public DishResponseDTO convertToDishResponseDTO(Dish dish) {

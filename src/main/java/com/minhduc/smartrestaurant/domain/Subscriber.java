@@ -32,6 +32,8 @@ public class Subscriber extends BaseEntity {
     @NotBlank(message = "name không được để trống")
     private String name;
 
+    private boolean active;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "Subscribers" })
     @JoinTable(name = "category_subscriber", joinColumns = @JoinColumn(name = "subscriber_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))

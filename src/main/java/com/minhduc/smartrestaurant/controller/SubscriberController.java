@@ -2,10 +2,12 @@ package com.minhduc.smartrestaurant.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.Subscriber;
@@ -49,5 +51,12 @@ public class SubscriberController {
         }
         Subscriber updateSubscriber = this.subscriberService.updateSubscriber(currentSubscriber, requestSubscriber);
         return ResponseEntity.status(HttpStatus.OK).body(updateSubscriber);
+    }
+
+    @GetMapping("/subscribers/unsubscribe")
+    @ApiMessage("Unsubscribe notification")
+    public ResponseEntity<Void> handleUnsubscribe(@RequestParam("email") String email) throws IdInvalidException {
+        this.subscriberService.handleUnsubscribe(email);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

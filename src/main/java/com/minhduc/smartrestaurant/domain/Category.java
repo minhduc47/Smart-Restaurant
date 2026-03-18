@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -28,4 +29,8 @@ public class Category extends BaseEntity {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Dish> dishes;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "categories")
+    @JsonIgnore
+    private List<Subscriber> subscribers;
 }

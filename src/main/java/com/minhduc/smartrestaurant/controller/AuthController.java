@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.User;
+import com.minhduc.smartrestaurant.domain.request.ReqForgotPasswordDTO;
 import com.minhduc.smartrestaurant.domain.request.ReqLoginDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqResetPasswordDTO;
 import com.minhduc.smartrestaurant.domain.request.ReqRegisterDTO;
 import com.minhduc.smartrestaurant.domain.response.ResCreateUserDTO;
 import com.minhduc.smartrestaurant.domain.response.ResLoginDTO;
@@ -195,6 +197,22 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(this.userService.convertToResCreateUserDTO(newUser));
+    }
+
+    @PostMapping("/auth/forgot-password")
+    @ApiMessage("Forgot password")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ReqForgotPasswordDTO requestDTO)
+            throws IdInvalidException {
+        this.userService.handleForgotPassword(requestDTO.getEmail());
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @PostMapping("/auth/reset-password")
+    @ApiMessage("Reset password")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ReqResetPasswordDTO requestDTO)
+            throws IdInvalidException {
+        this.userService.handleResetPassword(requestDTO.getToken(), requestDTO.getNewPassword());
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     private UserLogin mapUserLogin(User user) {

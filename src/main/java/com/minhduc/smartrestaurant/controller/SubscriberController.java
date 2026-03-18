@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minhduc.smartrestaurant.domain.Subscriber;
+import com.minhduc.smartrestaurant.domain.request.ReqSubscriberDTO;
+import com.minhduc.smartrestaurant.domain.response.ResSubscriberDTO;
 import com.minhduc.smartrestaurant.service.SubscriberService;
 import com.minhduc.smartrestaurant.util.annotation.ApiMessage;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
@@ -29,27 +31,30 @@ public class SubscriberController {
 
     @PostMapping("/subscribers")
     @ApiMessage("Create a subscriber")
-    public ResponseEntity<Subscriber> createNewSubscriber(@Valid @RequestBody Subscriber requestSubscriber)
+    public ResponseEntity<ResSubscriberDTO> createNewSubscriber(
+            @Valid @RequestBody ReqSubscriberDTO requestSubscriber)
             throws IdInvalidException {
         // check email exist
         boolean isExistEmail = this.subscriberService.isExistEmail(requestSubscriber.getEmail());
         if (isExistEmail) {
             throw new IdInvalidException("Email " + requestSubscriber.getEmail() + " đã tồn tại");
         }
-        Subscriber newSubscriber = this.subscriberService.handleCreateSubscriber(requestSubscriber);
+        ResSubscriberDTO newSubscriber = this.subscriberService.handleCreateSubscriber(requestSubscriber);
         return ResponseEntity.status(HttpStatus.CREATED).body(newSubscriber);
     }
 
     @PutMapping("/subscribers")
     @ApiMessage("Update a subscriber")
-    public ResponseEntity<Subscriber> updateSubscriber(@RequestBody Subscriber requestSubscriber)
+    public ResponseEntity<ResSubscriberDTO> updateSubscriber(@RequestParam("id") long id,
+            @Valid @RequestBody ReqSubscriberDTO requestSubscriber)
             throws IdInvalidException {
         // check subscriber by id
-        Subscriber currentSubscriber = this.subscriberService.fetchSubscriberById(requestSubscriber.getId());
+        Subscriber currentSubscriber = this.subscriberService.fetchSubscriberById(id);
         if (currentSubscriber == null) {
-            throw new IdInvalidException("Id " + requestSubscriber.getId() + " không tồn tại");
+            throw new IdInvalidException("Id " + id + " không tồn tại");
         }
-        Subscriber updateSubscriber = this.subscriberService.updateSubscriber(currentSubscriber, requestSubscriber);
+        ResSubscriberDTO updateSubscriber = this.subscriberService.updateSubscriber(currentSubscriber,
+                requestSubscriber);
         return ResponseEntity.status(HttpStatus.OK).body(updateSubscriber);
     }
 

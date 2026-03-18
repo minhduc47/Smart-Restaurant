@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DishRequestDTO {
+public class ReqDishDTO {
     @NotBlank(message = "Tên món ăn không được để trống")
     private String name;
 

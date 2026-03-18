@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.Dish;
-import com.minhduc.smartrestaurant.domain.request.DishRequestDTO;
+import com.minhduc.smartrestaurant.domain.request.ReqDishDTO;
 import com.minhduc.smartrestaurant.domain.request.ReqUpdateDishDTO;
-import com.minhduc.smartrestaurant.domain.response.DishResponseDTO;
+import com.minhduc.smartrestaurant.domain.response.ResDishDTO;
 import com.minhduc.smartrestaurant.domain.response.ResultPaginationDTO;
 import com.minhduc.smartrestaurant.repository.DishRepository;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
@@ -30,7 +30,7 @@ public class DishService {
 
     }
 
-    public Dish handleCreateDish(DishRequestDTO reqDTO) throws IdInvalidException {
+    public Dish handleCreateDish(ReqDishDTO reqDTO) throws IdInvalidException {
         Category category = this.categoryService.fetchCategoryById(reqDTO.getCategoryId());
 
         Dish dish = new Dish();
@@ -46,8 +46,8 @@ public class DishService {
         return savedDish;
     }
 
-    public DishResponseDTO convertToDishResponseDTO(Dish dish) {
-        DishResponseDTO resDTO = new DishResponseDTO();
+    public ResDishDTO convertToDishResponseDTO(Dish dish) {
+        ResDishDTO resDTO = new ResDishDTO();
         resDTO.setId(dish.getId());
         resDTO.setName(dish.getName());
         resDTO.setDescription(dish.getDescription());

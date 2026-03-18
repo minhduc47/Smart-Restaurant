@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.minhduc.smartrestaurant.domain.Category;
 import com.minhduc.smartrestaurant.domain.Dish;
 import com.minhduc.smartrestaurant.domain.Subscriber;
+import com.minhduc.smartrestaurant.domain.request.ReqSubscriberDTO;
+import com.minhduc.smartrestaurant.domain.response.ResSubscriberDTO;
 import com.minhduc.smartrestaurant.domain.response.email.ResEmailDish;
 import com.minhduc.smartrestaurant.repository.CategoryRepository;
 import com.minhduc.smartrestaurant.repository.SubscriberRepository;
@@ -44,40 +46,41 @@ public class SubscriberService {
         return null;
     }
 
-    public Subscriber handleCreateSubscriber(Subscriber requestSubscriber) {
-        // check Category id exist
-        if (requestSubscriber.getCategories() != null) {
+    public ResSubscriberDTO handleCreateSubscriber(ReqSubscriberDTO requestSubscriber) throws IdInvalidException {
+        Subscriber subscriber = new Subscriber();
+        subscriber.setName(requestSubscriber.getName());
+        subscriber.setEmail(requestSubscriber.getEmail());
+        subscriber.setCategories(this.mapCategoriesFromCategoryIds(requestSubscriber.getCategoryIds()));
+        subscriber.setActive(true);
 
-            List<Long> listIdCategory = new ArrayList<>();
-            // get List Category id
-            for (Category category : requestSubscriber.getCategories()) {
-                listIdCategory.add(category.getId());
-            }
-
-            List<Category> listCategories = this.categoryRepository.findByIdIn(listIdCategory);
-            requestSubscriber.setCategories(listCategories);
-        }
-        requestSubscriber.setActive(true);
-        return this.subscriberRepository.save(requestSubscriber);
+        Subscriber savedSubscriber = this.subscriberRepository.save(subscriber);
+        return this.convertToSubscriberResponseDTO(savedSubscriber);
     }
 
-    public Subscriber updateSubscriber(Subscriber currentSubscriber, Subscriber requestSubscriber) {
+    public ResSubscriberDTO updateSubscriber(Subscriber currentSubscriber, ReqSubscriberDTO requestSubscriber)
+            throws IdInvalidException {
         currentSubscriber.setName(requestSubscriber.getName());
         currentSubscriber.setEmail(requestSubscriber.getEmail());
-        // check category id exist
-        if (requestSubscriber.getCategories() != null) {
-            // get List Category id
-            List<Long> listIdCategory = requestSubscriber.getCategories()
-                    .stream().map(category -> category.getId())
-                    .collect(Collectors.toList());
+        currentSubscriber.setCategories(this.mapCategoriesFromCategoryIds(requestSubscriber.getCategoryIds()));
 
-            // get List Category by List Category id
-            List<Category> listCategories = this.categoryRepository.findByIdIn(listIdCategory);
-            // set currentSubscriber
-            currentSubscriber.setCategories(listCategories);
-        }
-        currentSubscriber = this.subscriberRepository.save(currentSubscriber);
-        return currentSubscriber;
+        Subscriber updatedSubscriber = this.subscriberRepository.save(currentSubscriber);
+        return this.convertToSubscriberResponseDTO(updatedSubscriber);
+    }
+
+    public ResSubscriberDTO convertToSubscriberResponseDTO(Subscriber subscriber) {
+        ResSubscriberDTO responseDTO = new ResSubscriberDTO();
+        responseDTO.setId(subscriber.getId());
+        responseDTO.setEmail(subscriber.getEmail());
+        responseDTO.setName(subscriber.getName());
+        responseDTO.setActive(subscriber.isActive());
+        responseDTO.setCreatedAt(subscriber.getCreatedAt());
+        responseDTO.setUpdatedAt(subscriber.getUpdatedAt());
+
+        List<String> categoryNames = subscriber.getCategories() == null
+                ? Collections.emptyList()
+                : subscriber.getCategories().stream().map(Category::getName).collect(Collectors.toList());
+        responseDTO.setCategoryNames(categoryNames);
+        return responseDTO;
     }
 
     public void sendNotificationForNewDish(Dish newDish) {
@@ -122,5 +125,16 @@ public class SubscriberService {
     private String buildUnsubscribeUrl(String email) {
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
         return "http://localhost:8080/api/v1/subscribers/unsubscribe?email=" + encodedEmail;
+    }
+
+    private List<Category> mapCategoriesFromCategoryIds(List<Long> categoryIds) throws IdInvalidException {
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Category> categories = this.categoryRepository.findByIdIn(categoryIds);
+        if (categories.size() != categoryIds.size()) {
+            throw new IdInvalidException("Một hoặc nhiều categoryId không tồn tại");
+        }
+        return categories;
     }
 }

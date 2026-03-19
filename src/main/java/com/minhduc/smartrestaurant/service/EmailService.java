@@ -12,8 +12,10 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
@@ -25,7 +27,12 @@ public class EmailService {
     }
 
     public void sendEmailSync(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
-        // Prepare message using a Spring helper
+        if (to == null || to.isBlank()) {
+            log.warn("Bỏ qua gửi mail vì địa chỉ nhận đang trống");
+            return;
+        }
+        log.info("Bắt đầu gửi mail cho subscriber/email: {} với subject: {}", to, subject);
+
         MimeMessage mimeMessage = this.javaMailSender.createMimeMessage();
         try {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, isMultipart,
@@ -35,7 +42,7 @@ public class EmailService {
             message.setText(content, isHtml);
             this.javaMailSender.send(mimeMessage);
         } catch (MailException | MessagingException e) {
-            System.out.println("ERROR SEND EMAIL: " + e);
+            log.error("Lỗi gửi mail: {}", e.getMessage(), e);
         }
     }
 
@@ -48,6 +55,7 @@ public class EmailService {
     @Async
     public void sendEmailFromTemplateSync(String to, String subject, String templateName, String username,
             Object value, String unsubscribeUrl) {
+        log.info("Bắt đầu xử lý template mail '{}' cho {}", templateName, to);
         Context context = new Context();
         context.setVariable("name", username);
         context.setVariable("jobs", value);

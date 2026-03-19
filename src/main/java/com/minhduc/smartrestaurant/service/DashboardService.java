@@ -14,7 +14,10 @@ import com.minhduc.smartrestaurant.repository.OrderDetailRepository;
 import com.minhduc.smartrestaurant.repository.OrderRepository;
 import com.minhduc.smartrestaurant.repository.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class DashboardService {
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
@@ -28,52 +31,64 @@ public class DashboardService {
     }
 
     public ResDashboardDTO getDashboardStats() {
-        ResDashboardDTO res = new ResDashboardDTO();
+        log.info("Bắt đầu tổng hợp thống kê dashboard");
+        try {
+            ResDashboardDTO res = new ResDashboardDTO();
 
-        long totalRevenue = defaultLong(orderRepository.getTotalRevenueFromPaidOrders());
+            long totalRevenue = defaultLong(orderRepository.getTotalRevenueFromPaidOrders());
 
-        List<OrderRepository.OrderStatusCountProjection> statusStats = orderRepository.countOrdersByStatus();
-        long totalOrders = statusStats.stream()
-                .mapToLong(item -> defaultLong(item.getTotal()))
-                .sum();
-
-        long paidOrders = statusStats.stream()
-                .filter(item -> "PAID".equalsIgnoreCase(item.getStatus()))
-                .mapToLong(item -> defaultLong(item.getTotal()))
-                .sum();
-
-        long pendingOrders = statusStats.stream()
-                .filter(item -> "PENDING".equalsIgnoreCase(item.getStatus()))
-                .mapToLong(item -> defaultLong(item.getTotal()))
-                .sum();
-
-        Map<String, Long> revenueByMethod = new LinkedHashMap<>();
-        revenueByMethod.put("CASH", 0L);
-        revenueByMethod.put("VNPAY", 0L);
-
-        orderRepository.getRevenueByPaymentMethod().forEach(item -> {
-            if (item.getPaymentMethod() != null) {
-                revenueByMethod.put(item.getPaymentMethod(), defaultLong(item.getRevenue()));
+            List<OrderRepository.OrderStatusCountProjection> statusStats = orderRepository.countOrdersByStatus();
+            if (statusStats == null || statusStats.isEmpty()) {
+                log.warn("Không tìm thấy dữ liệu trạng thái đơn hàng để hiển thị dashboard");
+                statusStats = List.of();
             }
-        });
 
-        List<ResDashboardDTO.TopSellingDishDTO> topSellingDishes = orderDetailRepository.findTopSellingDishes().stream()
-                .map(item -> {
-                    ResDashboardDTO.TopSellingDishDTO dishDTO = new ResDashboardDTO.TopSellingDishDTO();
-                    dishDTO.setDishId(defaultLong(item.getDishId()));
-                    dishDTO.setDishName(item.getDishName());
-                    dishDTO.setTotalQuantity(defaultLong(item.getTotalQuantity()));
-                    return dishDTO;
-                })
-                .toList();
+            long totalOrders = statusStats.stream()
+                    .mapToLong(item -> defaultLong(item.getTotal()))
+                    .sum();
 
-        res.setTotalRevenue(totalRevenue);
-        res.setTotalOrders(totalOrders);
-        res.setPaidOrders(paidOrders);
-        res.setPendingOrders(pendingOrders);
-        res.setRevenueByMethod(revenueByMethod);
-        res.setTopSellingDishes(topSellingDishes);
-        return res;
+            long paidOrders = statusStats.stream()
+                    .filter(item -> "PAID".equalsIgnoreCase(item.getStatus()))
+                    .mapToLong(item -> defaultLong(item.getTotal()))
+                    .sum();
+
+            long pendingOrders = statusStats.stream()
+                    .filter(item -> "PENDING".equalsIgnoreCase(item.getStatus()))
+                    .mapToLong(item -> defaultLong(item.getTotal()))
+                    .sum();
+
+            Map<String, Long> revenueByMethod = new LinkedHashMap<>();
+            revenueByMethod.put("CASH", 0L);
+            revenueByMethod.put("VNPAY", 0L);
+
+            orderRepository.getRevenueByPaymentMethod().forEach(item -> {
+                if (item.getPaymentMethod() != null) {
+                    revenueByMethod.put(item.getPaymentMethod(), defaultLong(item.getRevenue()));
+                }
+            });
+
+            List<ResDashboardDTO.TopSellingDishDTO> topSellingDishes = orderDetailRepository.findTopSellingDishes()
+                    .stream()
+                    .map(item -> {
+                        ResDashboardDTO.TopSellingDishDTO dishDTO = new ResDashboardDTO.TopSellingDishDTO();
+                        dishDTO.setDishId(defaultLong(item.getDishId()));
+                        dishDTO.setDishName(item.getDishName());
+                        dishDTO.setTotalQuantity(defaultLong(item.getTotalQuantity()));
+                        return dishDTO;
+                    })
+                    .toList();
+
+            res.setTotalRevenue(totalRevenue);
+            res.setTotalOrders(totalOrders);
+            res.setPaidOrders(paidOrders);
+            res.setPendingOrders(pendingOrders);
+            res.setRevenueByMethod(revenueByMethod);
+            res.setTopSellingDishes(topSellingDishes);
+            return res;
+        } catch (RuntimeException ex) {
+            log.error("Lỗi khi tổng hợp dashboard: {}", ex.getMessage(), ex);
+            throw ex;
+        }
     }
 
     public boolean isCurrentUserAdmin() {

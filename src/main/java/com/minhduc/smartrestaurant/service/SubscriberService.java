@@ -20,7 +20,10 @@ import com.minhduc.smartrestaurant.repository.CategoryRepository;
 import com.minhduc.smartrestaurant.repository.SubscriberRepository;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class SubscriberService {
 
     private final SubscriberRepository subscriberRepository;
@@ -85,29 +88,41 @@ public class SubscriberService {
 
     public void sendNotificationForNewDish(Dish newDish) {
         if (newDish == null || newDish.getCategory() == null) {
+            log.warn("Không thể gửi thông báo món mới vì dish hoặc category đang null");
             return;
         }
+
+        log.info("Bắt đầu gửi mail cho subscriber về món mới: {}", newDish.getName());
 
         List<Subscriber> subscribers = this.subscriberRepository
                 .findActiveSubscribersByCategoryId(newDish.getCategory().getId());
         if (subscribers == null || subscribers.isEmpty()) {
+            log.warn("Không có subscriber active nào đăng ký category '{}'", newDish.getCategory().getName());
             return;
         }
 
         for (Subscriber subscriber : subscribers) {
+            if (subscriber.isActive() && (subscriber.getCategories() == null || subscriber.getCategories().isEmpty())) {
+                log.warn("Subscriber {} đã active nhưng không có category nào đăng ký", subscriber.getEmail());
+            }
+
             ResEmailDish resEmailDish = new ResEmailDish();
             resEmailDish.setDishName(newDish.getName());
             resEmailDish.setPrice(newDish.getPrice());
             resEmailDish.setImage(newDish.getImage());
             resEmailDish.setCategoryName(newDish.getCategory().getName());
 
-            this.emailService.sendEmailFromTemplateSync(
-                    subscriber.getEmail(),
-                    "[Smart Restaurant] Món mới: " + newDish.getName(),
-                    "dish",
-                    subscriber.getName(),
-                    Collections.singletonList(resEmailDish),
-                    this.buildUnsubscribeUrl(subscriber.getEmail()));
+            try {
+                this.emailService.sendEmailFromTemplateSync(
+                        subscriber.getEmail(),
+                        "[Smart Restaurant] Món mới: " + newDish.getName(),
+                        "dish",
+                        subscriber.getName(),
+                        Collections.singletonList(resEmailDish),
+                        this.buildUnsubscribeUrl(subscriber.getEmail()));
+            } catch (Exception ex) {
+                log.error("Lỗi gửi mail: {}", ex.getMessage(), ex);
+            }
         }
     }
 

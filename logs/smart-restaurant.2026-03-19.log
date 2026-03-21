@@ -1,0 +1,76 @@
+2026-03-19 20:18:43.427 INFO  [restartedMain] c.m.s.SmartRestaurantApplication : Starting SmartRestaurantApplication using Java 21.0.9 with PID 10824 (E:\User\MinhDuc\OneDrive\Documents\smart-restaurant\bin\main started by Acer Nitro 5 in E:\User\MinhDuc\OneDrive\Documents\smart-restaurant)
+2026-03-19 20:18:43.429 INFO  [restartedMain] c.m.s.SmartRestaurantApplication : No active profile set, falling back to 1 default profile: "default"
+2026-03-19 20:18:43.489 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-03-19 20:18:43.489 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-03-19 20:18:45.152 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-19 20:18:45.245 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 79 ms. Found 11 JPA repository interfaces.
+2026-03-19 20:18:46.539 INFO  [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer : Tomcat initialized with port 8080 (http)
+2026-03-19 20:18:46.583 INFO  [restartedMain] o.apache.catalina.core.StandardService : Starting service [Tomcat]
+2026-03-19 20:18:46.584 INFO  [restartedMain] o.apache.catalina.core.StandardEngine : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2026-03-19 20:18:46.660 INFO  [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/] : Initializing Spring embedded WebApplicationContext
+2026-03-19 20:18:46.660 INFO  [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3168 ms
+2026-03-19 20:18:47.418 INFO  [restartedMain] o.hibernate.jpa.internal.util.LogHelper : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-19 20:18:47.545 INFO  [restartedMain] org.hibernate.Version : HHH000412: Hibernate ORM core version 6.6.29.Final
+2026-03-19 20:18:47.577 INFO  [restartedMain] o.h.c.internal.RegionFactoryInitiator : HHH000026: Second-level cache disabled
+2026-03-19 20:18:47.829 INFO  [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-19 20:18:47.872 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource : HikariPool-1 - Starting...
+2026-03-19 20:18:48.203 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@61143b20
+2026-03-19 20:18:48.205 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource : HikariPool-1 - Start completed.
+2026-03-19 20:18:48.289 INFO  [restartedMain] org.hibernate.orm.connections.pooling : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.40
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-19 20:18:49.381 INFO  [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-19 20:18:49.501 INFO  [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-19 20:18:50.525 INFO  [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-19 20:18:51.439 WARN  [restartedMain] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-19 20:18:51.459 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2026-03-19 20:18:52.002 INFO  [restartedMain] o.s.b.a.e.web.EndpointLinksResolver : Exposing 1 endpoint beneath base path '/actuator'
+2026-03-19 20:18:52.621 INFO  [restartedMain] o.s.b.d.a.OptionalLiveReloadServer : LiveReload server is running on port 35729
+2026-03-19 20:18:52.680 INFO  [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer : Tomcat started on port 8080 (http) with context path '/'
+2026-03-19 20:18:52.699 INFO  [restartedMain] c.m.s.SmartRestaurantApplication : Started SmartRestaurantApplication in 9.989 seconds (process running for 10.682)
+2026-03-19 20:18:55.158 INFO  [RMI TCP Connection(2)-127.0.0.1] o.a.c.c.C.[Tomcat].[localhost].[/] : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-19 20:18:55.159 INFO  [RMI TCP Connection(2)-127.0.0.1] o.s.web.servlet.DispatcherServlet : Initializing Servlet 'dispatcherServlet'
+2026-03-19 20:18:55.161 INFO  [RMI TCP Connection(2)-127.0.0.1] o.s.web.servlet.DispatcherServlet : Completed initialization in 2 ms
+2026-03-19 20:28:52.370 INFO  [restartedMain] c.m.s.SmartRestaurantApplication : Starting SmartRestaurantApplication using Java 21.0.9 with PID 11576 (E:\User\MinhDuc\OneDrive\Documents\smart-restaurant\bin\main started by Acer Nitro 5 in E:\User\MinhDuc\OneDrive\Documents\smart-restaurant)
+2026-03-19 20:28:52.372 INFO  [restartedMain] c.m.s.SmartRestaurantApplication : No active profile set, falling back to 1 default profile: "default"
+2026-03-19 20:28:52.430 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-03-19 20:28:52.431 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-03-19 20:28:53.930 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-19 20:28:54.026 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 78 ms. Found 11 JPA repository interfaces.
+2026-03-19 20:28:55.326 INFO  [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer : Tomcat initialized with port 8080 (http)
+2026-03-19 20:28:55.367 INFO  [restartedMain] o.apache.catalina.core.StandardService : Starting service [Tomcat]
+2026-03-19 20:28:55.369 INFO  [restartedMain] o.apache.catalina.core.StandardEngine : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2026-03-19 20:28:55.526 INFO  [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/] : Initializing Spring embedded WebApplicationContext
+2026-03-19 20:28:55.529 INFO  [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3097 ms
+2026-03-19 20:28:56.318 INFO  [restartedMain] o.hibernate.jpa.internal.util.LogHelper : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-19 20:28:56.362 INFO  [restartedMain] org.hibernate.Version : HHH000412: Hibernate ORM core version 6.6.29.Final
+2026-03-19 20:28:56.387 INFO  [restartedMain] o.h.c.internal.RegionFactoryInitiator : HHH000026: Second-level cache disabled
+2026-03-19 20:28:56.679 INFO  [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-19 20:28:56.707 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource : HikariPool-1 - Starting...
+2026-03-19 20:28:56.971 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@54a521d9
+2026-03-19 20:28:56.974 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource : HikariPool-1 - Start completed.
+2026-03-19 20:28:57.063 INFO  [restartedMain] org.hibernate.orm.connections.pooling : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.40
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-19 20:28:58.108 INFO  [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-19 20:28:58.212 INFO  [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-19 20:28:59.082 INFO  [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-19 20:29:00.012 WARN  [restartedMain] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-19 20:29:00.055 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2026-03-19 20:29:00.521 INFO  [restartedMain] o.s.b.a.e.web.EndpointLinksResolver : Exposing 1 endpoint beneath base path '/actuator'
+2026-03-19 20:29:01.072 INFO  [restartedMain] o.s.b.d.a.OptionalLiveReloadServer : LiveReload server is running on port 35729
+2026-03-19 20:29:01.128 INFO  [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer : Tomcat started on port 8080 (http) with context path '/'
+2026-03-19 20:29:01.144 INFO  [restartedMain] c.m.s.SmartRestaurantApplication : Started SmartRestaurantApplication in 9.341 seconds (process running for 10.088)
+2026-03-19 20:29:04.088 INFO  [RMI TCP Connection(2)-127.0.0.1] o.a.c.c.C.[Tomcat].[localhost].[/] : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-19 20:29:04.089 INFO  [RMI TCP Connection(2)-127.0.0.1] o.s.web.servlet.DispatcherServlet : Initializing Servlet 'dispatcherServlet'
+2026-03-19 20:29:04.091 INFO  [RMI TCP Connection(2)-127.0.0.1] o.s.web.servlet.DispatcherServlet : Completed initialization in 2 ms

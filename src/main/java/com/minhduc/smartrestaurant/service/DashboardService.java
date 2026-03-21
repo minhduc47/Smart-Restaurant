@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,9 @@ public class DashboardService {
         this.userRepository = userRepository;
     }
 
+    @Cacheable(value = "dashboard_stats", key = "'all'")
     public ResDashboardDTO getDashboardStats() {
-        log.info("Bắt đầu tổng hợp thống kê dashboard");
+        log.info("Cache MISS dashboard_stats::all -> lấy dữ liệu từ Database để tổng hợp dashboard");
         try {
             ResDashboardDTO res = new ResDashboardDTO();
 
@@ -84,6 +86,7 @@ public class DashboardService {
             res.setPendingOrders(pendingOrders);
             res.setRevenueByMethod(revenueByMethod);
             res.setTopSellingDishes(topSellingDishes);
+            log.info("Đã tổng hợp dashboard từ Database và ghi vào cache dashboard_stats::all");
             return res;
         } catch (RuntimeException ex) {
             log.error("Lỗi khi tổng hợp dashboard: {}", ex.getMessage(), ex);

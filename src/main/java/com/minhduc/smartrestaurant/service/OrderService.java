@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,7 +31,10 @@ import com.minhduc.smartrestaurant.util.constant.PaymentStatusEnum;
 import com.minhduc.smartrestaurant.util.constant.TableEnum;
 import com.minhduc.smartrestaurant.util.error.IdInvalidException;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class OrderService {
     private final OrderRepository orderRepository;
     private final DishRepository dishRepository;
@@ -213,5 +217,10 @@ public class OrderService {
         existingOrder.setTotalPrice(finalTotalPrice);
 
         return orderRepository.save(existingOrder);
+    }
+
+    @CacheEvict(value = "dashboard_stats", key = "'all'")
+    public void handleOrderPaymentSuccess(Long orderId) {
+        log.info("Đơn hàng {} thanh toán thành công -> đã xóa cache dashboard_stats::all", orderId);
     }
 }

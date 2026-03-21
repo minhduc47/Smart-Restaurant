@@ -28,13 +28,16 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final RestaurantTableRepository restaurantTableRepository;
     private final VNPayService vnPayService;
+    private final OrderService orderService;
 
     public PaymentService(OrderRepository orderRepository, PaymentRepository paymentRepository,
-            RestaurantTableRepository restaurantTableRepository, VNPayService vnPayService) {
+            RestaurantTableRepository restaurantTableRepository, VNPayService vnPayService,
+            OrderService orderService) {
         this.orderRepository = orderRepository;
         this.paymentRepository = paymentRepository;
         this.restaurantTableRepository = restaurantTableRepository;
         this.vnPayService = vnPayService;
+        this.orderService = orderService;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -85,6 +88,8 @@ public class PaymentService {
                 savedPayment.getUpdatedAt() != null ? savedPayment.getUpdatedAt() : savedPayment.getCreatedAt());
         resDTO.setTableStatus(order.getRestaurantTable() != null ? order.getRestaurantTable().getOccupied()
                 : TableEnum.AVAILABLE);
+
+        this.orderService.handleOrderPaymentSuccess(order.getId());
 
         return resDTO;
     }
@@ -230,6 +235,7 @@ public class PaymentService {
         payment.setTransactionRef(vnpTransactionNo);
 
         this.orderRepository.save(order);
+        this.orderService.handleOrderPaymentSuccess(order.getId());
 
         System.out.println(">>> Đã cập nhật DB cho đơn hàng: " + orderId);
     }

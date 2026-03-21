@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # 1. MySQL Server
+  mysql-db:
+    image: mysql:8.0
+    container_name: restaurant-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "leminhduc472005"
+      MYSQL_DATABASE: "smartrestaurant"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # 2. Redis Server
+  redis-cache:
+    image: redis:latest
+    container_name: restaurant-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+
+volumes:
+  mysql_data:

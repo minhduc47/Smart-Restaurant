@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: smart-restaurant
+
+  # Config Database
+  datasource:
+    url: jdbc:mysql://localhost:3306/smartrestaurant
+    username: root
+    password: leminhduc472005
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  # Config Upload File Size
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  # Config Pagination
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+
+  # Config Email with Gmail
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: fmgduc47@gmail.com
+    password: isdykbjgmbroebuh
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# Custom Configs
+minhduc:
+  jwt:
+    base64-secret: qoAEABDke07+AVLepXB4aCMtsT0wMAqR5x2VFyldsnx6e75YQkJH2UcZKTjEyoNgG71SBCXfq5N6NVZxWOfsHQ==
+    access-token-validity-in-seconds: 8640000
+    refresh-token-validity-in-seconds: 8640000
+  
+  upload-file:
+    base-uri: "file:///E:/User/MinhDuc/OneDrive/Documents/upload/"
+
+  vnpay:
+    tmn-code: XWZTQOBR
+    hash-secret: TYBW0O8EALZS33HEAPQ16EDJ31ISD2M1
+    vnp-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    vnp-return-url: https://beauish-zaid-overdecadently.ngrok-free.dev/api/v1/payments/vnpay/return
